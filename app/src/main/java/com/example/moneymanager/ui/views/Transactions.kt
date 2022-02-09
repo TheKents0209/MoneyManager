@@ -32,8 +32,7 @@ fun TransactionScreen(mainViewModel: MainViewModel) {
     var expense by remember { mutableStateOf(0f) }
     var total by remember { mutableStateOf(income-expense) }
 
-    //TODO: if month value under 10 then add 0 before it ....DOESNT WORK PROPERLY
-    val params = "${now.year}%${now.month.value}%"
+    val params = "${now.year}_${formatMonthDoubleDigits(now.monthValue.toString())}%"
     Log.d("params", params)
     //val params = "2022_02%"
 
@@ -88,6 +87,14 @@ fun TransactionScreen(mainViewModel: MainViewModel) {
             }
 
         }
+    }
+}
+
+fun formatMonthDoubleDigits(monthNum: String): String {
+    if(monthNum.toInt() < 10) {
+        return "0${monthNum}"
+    } else {
+        return monthNum
     }
 }
 
