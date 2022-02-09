@@ -1,10 +1,7 @@
 package com.example.moneymanager.ui.views
 
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -42,7 +39,7 @@ fun TransactionScreen(mainViewModel: MainViewModel) {
 
     val formatter = NumberFormat.getCurrencyInstance()
     //TODO: Chevrons to edges, text positioning inline with chevrons
-    Column() {
+    Column(Modifier.fillMaxSize()) {
         Row(
             Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
         ) {
@@ -79,13 +76,37 @@ fun TransactionScreen(mainViewModel: MainViewModel) {
                 Text(text = formatter.format(total), fontSize = 12.sp)
             }
         }
+        //TODO:Styling
         LazyColumn() {
+            val listOfDays = mutableListOf<String>()
+            list.value?.forEach {
+                if(!listOfDays.contains(formatStringToDate(it.date).dayOfMonth.toString())) {
+                    Log.d("listofdays before", listOfDays.toString())
+                    Log.d("listofdays what is added", formatStringToDate(it.date).dayOfMonth.toString())
+                    listOfDays += formatStringToDate(it.date).dayOfMonth.toString()
+                    Log.d("listofdays after", listOfDays.toString())
+                }
+            }
+            //More effective way of doing this?
+            listOfDays.forEach { dateString ->
+                item {
+                    Row() {
+                        Text(text = dateString)
+                    }
+                    Column() {
+                        list.value?.forEach {
+                            if(formatStringToDate(it.date).dayOfMonth.toString() == dateString) {
+                                Text(text = it.transactionId.toString())
+                            }
+                        }
+                    }
+                }
+            }
             list.value?.forEach {
                 item {
                     Text(text = "${it.transactionId} = id")
                 }
             }
-
         }
     }
 }
@@ -97,4 +118,14 @@ fun formatMonthDoubleDigits(monthNum: String): String {
         return monthNum
     }
 }
+
+fun formatStringToDate(dateString: String): LocalDateTime {
+    return LocalDateTime.parse(dateString)
+}
+
+fun addTransaction() {
+
+}
+
+
 

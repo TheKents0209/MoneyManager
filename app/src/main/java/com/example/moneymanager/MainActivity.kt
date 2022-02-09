@@ -1,20 +1,21 @@
 package com.example.moneymanager
 
 import android.app.Activity
-import android.content.SharedPreferences
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,10 +26,7 @@ import com.example.moneymanager.data.model.Account
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.viewmodel.MainViewModel
-import com.example.moneymanager.ui.views.AccountsScreen
-import com.example.moneymanager.ui.views.SettingsScreen
-import com.example.moneymanager.ui.views.StatsScreen
-import com.example.moneymanager.ui.views.TransactionScreen
+import com.example.moneymanager.ui.views.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class MainActivity : ComponentActivity() {
@@ -47,8 +45,8 @@ class MainActivity : ComponentActivity() {
         val prefGet = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
         firstLaunch = prefGet.getBoolean("isFirstLaunch", true)
 
-        if(firstLaunch) {
-            mainViewModel.insertAccount(Account(0,"Bank", "Nordea", 100f, true))
+        if (firstLaunch) {
+            mainViewModel.insertAccount(Account(0, "Bank", "Nordea", 100f, true))
 
             val prefPut = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
             val prefEditor = prefPut.edit()
@@ -74,12 +72,27 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
         Scaffold(
-            bottomBar = { BottomNavigationBar(navController) }
+            bottomBar = { BottomNavigationBar(navController) },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { addTransaction() },
+                    //When navigation route is on Transactions, set FAB size to 48dp, else 0
+                    modifier =
+                    when (navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route) {
+                        NavigationItem.Transactions.route -> Modifier.size(48.dp)
+                        else -> {
+                            Modifier.size(0.dp)
+                        }
+                    }
+                )
+                {
+                    Icon(Icons.TwoTone.Add, contentDescription = "Add transaction")
+                }
+            }
         ) {
             Navigation(navController)
         }
@@ -101,7 +114,12 @@ class MainActivity : ComponentActivity() {
             val currentRoute = navBackStackEntry?.destination?.route
             items.forEach { item ->
                 BottomNavigationItem(
-                    icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
+                    icon = {
+                        Icon(
+                            painterResource(id = item.icon),
+                            contentDescription = item.title
+                        )
+                    },
                     label = { Text(text = item.title) },
                     selectedContentColor = MaterialTheme.colors.secondary,
                     unselectedContentColor = MaterialTheme.colors.onBackground,
@@ -158,3 +176,7 @@ class MainActivity : ComponentActivity() {
 //    val df = SimpleDateFormat("yyyy.MM.dd HH:mm")
 //    return df.parse(date).time
 //}
+
+fun nig() {
+
+}
