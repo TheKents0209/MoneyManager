@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MoneyManager</string>
+    <string name="expenses">Menot</string>
+    <string name="income">Tulot</string>
+    <string name="total">Yhteensä</string>
+</resources>
