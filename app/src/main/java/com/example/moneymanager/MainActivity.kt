@@ -75,14 +75,29 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
+        val currentRouteDestination = navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route
         Scaffold(
-            bottomBar = { BottomNavigationBar(navController) },
+            topBar = { if(currentRouteDestination == "AddTransaction") {
+                TopAppBar(
+                    title = { Text(text = "Transaction") },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            navController.navigateUp()
+                        }) {
+                            Icon(painterResource(R.drawable.ic_twotone_chevron_left_24), contentDescription = "Previous month")
+                        }
+                    },
+                    backgroundColor = MaterialTheme.colors.background)
+            } },
+            bottomBar = { if(currentRouteDestination != "AddTransaction") {
+                BottomNavigationBar(navController)
+            } },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { addTransaction() },
+                    onClick = { navController.navigate("AddTransaction")},
                     //When navigation route is on Transactions, set FAB size to 48dp, else 0
                     modifier =
-                    when (navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route) {
+                    when (currentRouteDestination) {
                         NavigationItem.Transactions.route -> Modifier.size(48.dp)
                         else -> {
                             Modifier.size(0.dp)
@@ -156,6 +171,9 @@ class MainActivity : ComponentActivity() {
             composable(NavigationItem.Settings.route) {
                 SettingsScreen()
             }
+            composable("AddTransaction") {
+                AddTransaction()
+            }
         }
     }
 }
@@ -176,7 +194,3 @@ class MainActivity : ComponentActivity() {
 //    val df = SimpleDateFormat("yyyy.MM.dd HH:mm")
 //    return df.parse(date).time
 //}
-
-fun nig() {
-
-}
