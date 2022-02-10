@@ -15,6 +15,7 @@ data class Transaction(
     //-1 for expense, 0 for transaction, +1 for income
     val type: Int,
     val date: String,
+    val category:  String,
     val accountId: Long,
     val amount: Float,
     val description: String,
