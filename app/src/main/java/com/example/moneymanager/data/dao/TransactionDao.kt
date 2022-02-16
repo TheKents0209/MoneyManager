@@ -5,7 +5,7 @@ import androidx.room.*
 import com.example.moneymanager.data.model.Transaction
 
 @Dao
-interface TransactionDao {
+interface TransactionDao : GenericDao<Transaction> {
     @Query("SELECT * FROM transactions")
     fun getAll(): LiveData<List<Transaction>>
 
@@ -14,13 +14,4 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE date LIKE :param")
     fun getTransactionsByMonth(param: String): LiveData<List<Transaction>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(transaction: Transaction)
-
-    @Update
-    suspend fun update(transaction: Transaction)
-
-    @Delete
-    suspend fun delete(transaction: Transaction)
 }
