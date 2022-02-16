@@ -1,6 +1,7 @@
 package com.example.moneymanager
 
 import android.app.Activity
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,31 +23,28 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.moneymanager.data.database.DB
 import com.example.moneymanager.data.model.Account
+import com.example.moneymanager.data.repository.AccountRepository
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
-import com.example.moneymanager.ui.viewmodel.MainViewModel
+import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.views.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class MainActivity : ComponentActivity() {
-
-    companion object {
-        private lateinit var mainViewModel: MainViewModel
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val firstLaunch: Boolean
 
-        mainViewModel = MainViewModel(application)
-
         val prefGet = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
         firstLaunch = prefGet.getBoolean("isFirstLaunch", true)
 
         if (firstLaunch) {
-            mainViewModel.insertAccount(Account(0, "Bank", "Nordea", 100f, true))
+            val accountViewModel = AccountViewModel(AccountRepository(DB.getInstance(Application()).AccountDao()))
+            accountViewModel.insertAccount(Account(0, "Bank", "Nordea", 100f, true))
 
             val prefPut = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
             val prefEditor = prefPut.edit()
@@ -99,6 +97,8 @@ class MainActivity : ComponentActivity() {
                     modifier =
                     when (currentRouteDestination) {
                         NavigationItem.Transactions.route -> Modifier.size(48.dp)
+                        //Dirty way, but navigation route is null only on startup anyway
+                        null -> Modifier.size(48.dp)
                         else -> {
                             Modifier.size(0.dp)
                         }
@@ -160,7 +160,7 @@ class MainActivity : ComponentActivity() {
     fun Navigation(navController: NavHostController) {
         NavHost(navController, startDestination = NavigationItem.Transactions.route) {
             composable(NavigationItem.Transactions.route) {
-                TransactionScreen(mainViewModel)
+                TransactionScreen()
             }
             composable(NavigationItem.Stats.route) {
                 StatsScreen()
