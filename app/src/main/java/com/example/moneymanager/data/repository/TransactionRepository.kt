@@ -8,4 +8,6 @@ class TransactionRepository(private val dbDao: TransactionDao) {
 
     fun getAllTransactions(): LiveData<List<Transaction>> = dbDao.getAll()
     fun getTransactionsByMonth(params: String): LiveData<List<Transaction>> = dbDao.getTransactionsByMonth(params)
+
+    suspend fun insertTransaction(t: Transaction) = dbDao.insert(t)
 }
