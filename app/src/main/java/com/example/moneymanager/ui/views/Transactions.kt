@@ -17,31 +17,38 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.moneymanager.R
-import com.example.moneymanager.ui.NavigationItem
-import com.example.moneymanager.ui.viewmodel.MainViewModel
+import com.example.moneymanager.data.database.DB
+import com.example.moneymanager.data.repository.TransactionRepository
+import com.example.moneymanager.ui.dialog.AccountAlertDialog
+import com.example.moneymanager.ui.dialog.DateAlertDialog
+import com.example.moneymanager.ui.viewmodel.TransactionViewModel
+import com.example.moneymanager.util.formatMonthDoubleDigits
+import com.example.moneymanager.util.formatStringToDate
 import java.text.NumberFormat
 import java.time.LocalDateTime
 import java.time.format.TextStyle
 import java.util.*
 
 @Composable
-fun TransactionScreen(mainViewModel: MainViewModel) {
+fun TransactionScreen() {
     var now by rememberSaveable { mutableStateOf(LocalDateTime.now())}
-    var income by remember { mutableStateOf(0f) }
-    var expense by remember { mutableStateOf(0f) }
-    var total by remember { mutableStateOf(income-expense) }
+    val income by remember { mutableStateOf(0f) }
+    val expense by remember { mutableStateOf(0f) }
+    val total by remember { mutableStateOf(income-expense) }
 
     val params = "${now.year}_${formatMonthDoubleDigits(now.monthValue.toString())}%"
     Log.d("params", params)
     //val params = "2022_02%"
 
-    var list = mainViewModel.getTransactionsByMonth(params).observeAsState()
+    val transactionViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
+
+    val list = transactionViewModel.transactionsMonthly(params).observeAsState()
 
     //mainViewModel.insertTransaction(Transaction(0, 1,LocalDateTime.now().toString(), 1, 10f, "", ""))
 
@@ -119,22 +126,11 @@ fun TransactionScreen(mainViewModel: MainViewModel) {
     }
 }
 
-fun formatMonthDoubleDigits(monthNum: String): String {
-    if(monthNum.toInt() < 10) {
-        return "0${monthNum}"
-    } else {
-        return monthNum
-    }
-}
-
-fun formatStringToDate(dateString: String): LocalDateTime {
-    return LocalDateTime.parse(dateString)
-}
-
 @Composable
 fun AddTransaction() {
     Column(Modifier.fillMaxSize()) {
         TransactionTypeGroup()
+        TransactionInfoFiller()
     }
 }
 
@@ -194,16 +190,12 @@ fun TransactionTypeGroup() {
     }
 }
 
-//TODO: AlertDialog for this
+//TODO: AlertDialog for this, automatically open each section
 @Composable
 fun TransactionInfoFiller() {
     Column() {
-        Row() {
-            Text(text = "Date")
-        }
-        Row() {
-            Text(text = "Account")
-        }
+        DateAlertDialog()
+        AccountAlertDialog()
         Row() {
             Text(text = "Category")
         }
