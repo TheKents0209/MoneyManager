@@ -13,8 +13,8 @@ fun formatMonthDoubleDigits(monthNum: String): String {
     }
 }
 
-fun formatStringToDate(dateString: String): LocalDateTime {
-    return LocalDateTime.parse(dateString)
+fun formatStringToDate(dateString: String): LocalDate {
+    return LocalDate.parse(dateString)
 }
 
 fun formatLocalDateToString(date: LocalDate): String {
