@@ -49,6 +49,9 @@ android {
 }
 
 dependencies {
+    //Seismic
+    implementation 'com.squareup:seismic:1.0.3'
+
     //ComposeCalendar
     implementation 'io.github.boguszpawlowski.composecalendar:composecalendar:0.3.0'
 
