@@ -33,7 +33,7 @@ import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.util.formatMonthDoubleDigits
 import com.example.moneymanager.util.formatStringToDate
 import com.example.moneymanager.util.getValidatedNumber
-import com.example.moneymanager.util.intToCurrencyString
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -130,6 +130,7 @@ fun TransactionScreen() {
     }
 }
 
+@ExperimentalPermissionsApi
 @Composable
 fun AddTransaction() {
     val tViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
@@ -137,6 +138,7 @@ fun AddTransaction() {
     Column(Modifier.fillMaxSize()) {
         TransactionTypeSelector(tViewModel)
         TransactionInfoFiller(tViewModel, aViewModel)
+        Camera(tViewModel)
         //TODO: CHECKS SO EVERYTHING IS FILLED
         Button(onClick = {
             tViewModel.insertTransaction()
@@ -230,9 +232,6 @@ fun TransactionInfoFiller(tViewModel: TransactionViewModel, aViewModel: AccountV
                 onValueChange = onDescriptionChange,
                 singleLine = true)
         }
-    }
-    Column() {
-        Text(text = "Camera")
     }
 }
 

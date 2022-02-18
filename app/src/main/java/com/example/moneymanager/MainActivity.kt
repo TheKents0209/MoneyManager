@@ -32,6 +32,7 @@ import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.SensorViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.ui.views.*
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.squareup.seismic.ShakeDetector
 
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
 
     private val sViewModel = SensorViewModel()
 
+    @ExperimentalPermissionsApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,11 +79,13 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     MainScreen()
+                    //Camera()
                 }
             }
         }
     }
 
+    @ExperimentalPermissionsApi
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
@@ -174,6 +178,7 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
         }
     }
 
+    @ExperimentalPermissionsApi
     @Composable
     fun Navigation(navController: NavHostController) {
         NavHost(navController, startDestination = NavigationItem.Transactions.route) {
