@@ -1,6 +1,8 @@
 package com.example.moneymanager
 
 import android.app.Activity
+import android.content.Context
+import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,10 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -30,14 +29,23 @@ import com.example.moneymanager.data.repository.TransactionRepository
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
+import com.example.moneymanager.ui.viewmodel.SensorViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.ui.views.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.squareup.seismic.ShakeDetector
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), ShakeDetector.Listener {
+
+    private val sViewModel = SensorViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val sd = ShakeDetector(this)
+        sd.setSensitivity(11)
+        sd.start(sensorManager)
 
         val firstLaunch: Boolean
 
@@ -78,6 +86,12 @@ class MainActivity : ComponentActivity() {
     fun MainScreen() {
         val navController = rememberNavController()
         val currentRouteDestination = navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route
+        val isShaken by sViewModel.isShaken.collectAsState()
+        LaunchedEffect(isShaken) {
+            if (isShaken && currentRouteDestination != "AddTransaction") {
+                navController.navigate("AddTransaction")
+            }
+        }
         Scaffold(
             topBar = { if(currentRouteDestination == "AddTransaction") {
                 TopAppBar(
@@ -165,6 +179,7 @@ class MainActivity : ComponentActivity() {
         NavHost(navController, startDestination = NavigationItem.Transactions.route) {
             composable(NavigationItem.Transactions.route) {
                 TransactionScreen()
+                sViewModel.reset()
             }
             composable(NavigationItem.Stats.route) {
                 StatsScreen()
@@ -179,6 +194,9 @@ class MainActivity : ComponentActivity() {
                 AddTransaction()
             }
         }
+    }
+    override fun hearShake() {
+        sViewModel.shake()
     }
 }
 
