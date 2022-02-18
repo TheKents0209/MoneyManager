@@ -1,12 +1,12 @@
 package com.example.moneymanager.ui.views
 
-import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.*
@@ -18,22 +18,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moneymanager.R
 import com.example.moneymanager.data.database.DB
+import com.example.moneymanager.data.repository.AccountRepository
 import com.example.moneymanager.data.repository.TransactionRepository
 import com.example.moneymanager.ui.dialog.AccountAlertDialog
 import com.example.moneymanager.ui.dialog.CategoryAlertDialog
 import com.example.moneymanager.ui.dialog.DateAlertDialog
+import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.util.formatMonthDoubleDigits
 import com.example.moneymanager.util.formatStringToDate
+import com.example.moneymanager.util.getValidatedNumber
+import com.example.moneymanager.util.intToCurrencyString
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
-import kotlin.random.Random
 
 @Composable
 fun TransactionScreen() {
@@ -129,9 +133,11 @@ fun TransactionScreen() {
 @Composable
 fun AddTransaction() {
     val tViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
+    val aViewModel = AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
     Column(Modifier.fillMaxSize()) {
         TransactionTypeSelector(tViewModel)
-        TransactionInfoFiller()
+        TransactionInfoFiller(tViewModel, aViewModel)
+        //TODO: CHECKS SO EVERYTHING IS FILLED
         Button(onClick = {
             tViewModel.insertTransaction()
         }) {
@@ -148,12 +154,7 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
 
     val expenseString = stringResource(id = R.string.expenses)
     var selectedOption by remember { mutableStateOf(expenseString) }
-
-    val selectedOptionInt by tViewModel.type.observeAsState(-1)
-
-    val onSelectionChange = { text: String ->
-        selectedOption = text
-    }
+    val onSelectionChange = { text: String -> selectedOption = text }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -179,7 +180,11 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
                         )
                         .clickable {
                             onSelectionChange(text)
-                            tViewModel.onTypeChange(Random.nextInt(0,100))
+                            if (text == expenseString) {
+                                tViewModel.onTypeChange(-1)
+                            } else {
+                                tViewModel.onTypeChange(1)
+                            }
                         }
                         .background(
                             if (text == selectedOption) {
@@ -200,20 +205,34 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
 
 //TODO: AlertDialog for this, automatically open each section
 @Composable
-fun TransactionInfoFiller() {
+fun TransactionInfoFiller(tViewModel: TransactionViewModel, aViewModel: AccountViewModel) {
+    val amountValue by tViewModel.amount.observeAsState()
+    val descriptionValue by tViewModel.description.observeAsState()
+    val onAmountChange : ((String) -> Unit) = { tViewModel.onAmountChange(getValidatedNumber(it)) }
+    val onDescriptionChange : ((String) -> Unit) = { tViewModel.onDescriptionChange(it) }
+
     Column() {
-        DateAlertDialog()
-        AccountAlertDialog()
-        CategoryAlertDialog()
+        DateAlertDialog(tViewModel)
+        AccountAlertDialog(tViewModel, aViewModel)
+        CategoryAlertDialog(tViewModel)
         Row() {
             Text(text = "Amount")
+            TextField(
+                value = amountValue.toString(),
+                onValueChange = onAmountChange,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true)
         }
         Row() {
             Text(text = "Description")
+            TextField(
+                value = descriptionValue.toString(),
+                onValueChange = onDescriptionChange,
+                singleLine = true)
         }
     }
     Column() {
-        Text(text = "Desc and camera")
+        Text(text = "Camera")
     }
 }
 
