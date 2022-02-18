@@ -7,15 +7,59 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.moneymanager.data.model.Transaction
 import com.example.moneymanager.data.repository.TransactionRepository
+import com.example.moneymanager.util.currencyStringToInt
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class TransactionViewModel(private val transactionRepository: TransactionRepository) : AndroidViewModel(Application()) {
 
     private val _type = MutableLiveData(-1)
     val type: LiveData<Int> = _type
 
+    private val _date = MutableLiveData(LocalDate.now().toString())
+    val date: LiveData<String> = _date
+
+    private val _category = MutableLiveData("")
+    val category: LiveData<String> = _category
+
+    private val _accountId = MutableLiveData(1L)
+    val accountId: LiveData<Long> = _accountId
+
+    private val _amount = MutableLiveData("")
+    val amount: LiveData<String> = _amount
+
+    private val _description = MutableLiveData("")
+    val description: LiveData<String> = _description
+
+    private val _imagePath = MutableLiveData("")
+    val imagePath: LiveData<String> = _imagePath
+
     fun onTypeChange(newType: Int) {
         _type.value = newType
+    }
+
+    fun onDateChange(newDate: String) {
+        _date.value = newDate
+    }
+
+    fun onCategoryChange(newCategory: String) {
+        _category.value = newCategory
+    }
+
+    fun onAccountIdChange(newId: Long) {
+        _accountId.value = newId
+    }
+
+    fun onAmountChange(newAmount: String) {
+        _amount.value = newAmount
+    }
+
+    fun onDescriptionChange(newDescription: String) {
+        _description.value = newDescription
+    }
+
+    fun onImagePathChange(newPath: String) {
+        _imagePath.value = newPath
     }
 
 
@@ -27,6 +71,7 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
         transactionRepository.insertTransaction(t)
     }
     fun insertTransaction() = viewModelScope.launch {
-        transactionRepository.insertTransaction(Transaction(0, type.value!!, "2022-02-16", "cat", 1, 10f, "", ""))
+        //null checks
+        transactionRepository.insertTransaction(Transaction(0, type.value!!, date.value!!, category.value!!, accountId.value!!, currencyStringToInt(amount.value), description.value!!, imagePath.value!!))
     }
 }
