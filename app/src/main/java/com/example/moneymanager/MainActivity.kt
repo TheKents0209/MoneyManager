@@ -1,7 +1,6 @@
 package com.example.moneymanager
 
 import android.app.Activity
-import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,10 +24,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.moneymanager.data.database.DB
 import com.example.moneymanager.data.model.Account
+import com.example.moneymanager.data.model.Transaction
 import com.example.moneymanager.data.repository.AccountRepository
+import com.example.moneymanager.data.repository.TransactionRepository
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
+import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.ui.views.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -43,8 +45,10 @@ class MainActivity : ComponentActivity() {
         firstLaunch = prefGet.getBoolean("isFirstLaunch", true)
 
         if (firstLaunch) {
-            val accountViewModel = AccountViewModel(AccountRepository(DB.getInstance(Application()).AccountDao()))
-            accountViewModel.insertAccount(Account(0, "Bank", "Nordea", 100f, true))
+            val accountViewModel = AccountViewModel(AccountRepository(DB.getInstance(application).AccountDao()))
+            val transactionViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(application).TransactionDao()))
+            accountViewModel.insertAccount(Account(0, "Bank", "Nordea", 10000, true))
+            transactionViewModel.insertTransaction(Transaction(0, -1, "2022-02-16", "Food", 1, 2000, "", ""))
 
             val prefPut = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
             val prefEditor = prefPut.edit()
