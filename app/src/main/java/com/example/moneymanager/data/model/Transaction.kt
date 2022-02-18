@@ -17,7 +17,7 @@ data class Transaction(
     val date: String,
     val category:  String,
     val accountId: Long,
-    val amount: Float,
+    val amount: Int,
     val description: String,
     val imagePath: String
 )

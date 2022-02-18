@@ -9,6 +9,6 @@ data class Account(
     val id: Long,
     val group: String,
     val name: String,
-    val amount: Float,
+    val amount: Int,
     val includeInTotals: Boolean
 )
