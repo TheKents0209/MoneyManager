@@ -1,5 +1,6 @@
 package com.example.moneymanager
 
+import InsertTransaction
 import android.app.Activity
 import android.content.Context
 import android.hardware.SensorManager
@@ -32,7 +33,6 @@ import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.SensorViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.ui.views.*
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.squareup.seismic.ShakeDetector
 
@@ -40,7 +40,6 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
 
     private val sViewModel = SensorViewModel()
 
-    @ExperimentalPermissionsApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,10 +54,26 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
         firstLaunch = prefGet.getBoolean("isFirstLaunch", true)
 
         if (firstLaunch) {
-            val accountViewModel = AccountViewModel(AccountRepository(DB.getInstance(application).AccountDao()))
-            val transactionViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(application).TransactionDao()))
+            val accountViewModel =
+                AccountViewModel(AccountRepository(DB.getInstance(application).AccountDao()))
+            val transactionViewModel = TransactionViewModel(
+                TransactionRepository(
+                    DB.getInstance(application).TransactionDao()
+                )
+            )
             accountViewModel.insertAccount(Account(0, "Bank", "Nordea", 10000, true))
-            transactionViewModel.insertTransaction(Transaction(0, -1, "2022-02-16", "Food", 1, 2000, "", ""))
+            transactionViewModel.insertTransaction(
+                Transaction(
+                    0,
+                    -1,
+                    "2022-02-16",
+                    "Food",
+                    1,
+                    2000,
+                    "",
+                    ""
+                )
+            )
 
             val prefPut = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
             val prefEditor = prefPut.edit()
@@ -79,17 +94,16 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     MainScreen()
-                    //Camera()
                 }
             }
         }
     }
 
-    @ExperimentalPermissionsApi
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
-        val currentRouteDestination = navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route
+        val currentRouteDestination =
+            navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route
         val isShaken by sViewModel.isShaken.collectAsState()
         LaunchedEffect(isShaken) {
             if (isShaken && currentRouteDestination != "AddTransaction") {
@@ -97,24 +111,35 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
             }
         }
         Scaffold(
-            topBar = { if(currentRouteDestination == "AddTransaction") {
-                TopAppBar(
-                    title = { Text(text = "Transaction") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigateUp()
-                        }) {
-                            Icon(painterResource(R.drawable.ic_twotone_chevron_left_24), contentDescription = "Previous month")
-                        }
-                    },
-                    backgroundColor = MaterialTheme.colors.background)
-            } },
-            bottomBar = { if(currentRouteDestination != "AddTransaction") {
-                BottomNavigationBar(navController)
-            } },
+            topBar = {
+                if (currentRouteDestination == "AddTransaction") {
+                    TopAppBar(
+                        title = { Text(text = "Transaction") },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                navController.navigateUp()
+                            }) {
+                                Icon(
+                                    painterResource(R.drawable.ic_twotone_chevron_left_24),
+                                    contentDescription = "Previous month"
+                                )
+                            }
+                        },
+                        backgroundColor = MaterialTheme.colors.background
+                    )
+                }
+            },
+            bottomBar = {
+                if (currentRouteDestination != "AddTransaction") {
+                    BottomNavigationBar(navController)
+                }
+                if (currentRouteDestination == "AddTransaction") {
+                    InsertTransaction(navController)
+                }
+            },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { navController.navigate("AddTransaction")},
+                    onClick = { navController.navigate("AddTransaction") },
                     //When navigation route is on Transactions, set FAB size to 48dp, else 0
                     modifier =
                     when (currentRouteDestination) {
@@ -178,7 +203,6 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
         }
     }
 
-    @ExperimentalPermissionsApi
     @Composable
     fun Navigation(navController: NavHostController) {
         NavHost(navController, startDestination = NavigationItem.Transactions.route) {
@@ -196,28 +220,12 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
                 SettingsScreen()
             }
             composable("AddTransaction") {
-                AddTransaction()
+                InsertTransaction(navController)
             }
         }
     }
+
     override fun hearShake() {
         sViewModel.shake()
     }
 }
-
-
-//Converting Long to Date and other way around
-//fun convertLongToTime(time: Long): String {
-//    val date = Date(time)
-//    val format = SimpleDateFormat("yyyy.MM.dd HH:mm")
-//    return format.format(date)
-//}
-//
-//fun currentTimeToLong(): Long {
-//    return System.currentTimeMillis()
-//}
-//
-//fun convertDateToLong(date: String): Long {
-//    val df = SimpleDateFormat("yyyy.MM.dd HH:mm")
-//    return df.parse(date).time
-//}
