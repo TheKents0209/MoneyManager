@@ -1,5 +1,4 @@
-package com.example.moneymanager.ui.views
-
+import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -21,115 +20,99 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import androidx.navigation.NavController
+import com.example.moneymanager.R
+import com.example.moneymanager.data.database.DB
+import com.example.moneymanager.data.repository.AccountRepository
+import com.example.moneymanager.data.repository.TransactionRepository
+import com.example.moneymanager.ui.components.*
+import com.example.moneymanager.ui.viewmodel.AccountViewModel
+import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileDescriptor
 
-
-@ExperimentalMaterialApi
-@ExperimentalPermissionsApi
+//Sample used
+//https://github.com/MakeItEasyDev/Jetpack-Compose-Capture-Image-Or-Choose-from-Gallery/blob/main/app/src/main/java/com/jetpack/takecamerapicture/MainActivity.kt
+@OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
-fun Camera() {
-    val multiplePermissionsState = rememberMultiplePermissionsState(
-        listOf(
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            android.Manifest.permission.CAMERA,
+fun InsertTransaction(navController: NavController) {
+    val tViewModel = TransactionViewModel(
+        TransactionRepository(
+            DB.getInstance(LocalContext.current).TransactionDao()
         )
     )
-    var isCameraSelected = false
+    val aViewModel =
+        AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
+
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
+    )
+    val multiplePermissionsState = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+        )
+    )
     var photoURI: Uri? = null
-    var bitmap: Bitmap? = null
     val coroutineScope = rememberCoroutineScope()
 
     var currentPhotoPath: String? = null
 
     val context = LocalContext.current
-    val bottomSheetState =
-        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
     val result = remember { mutableStateOf<Bitmap?>(null) }
 
-    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        coroutineScope.launch {
-            if(uri != null) {
-                val parcelFileDescriptor = context.contentResolver.openFileDescriptor(
-                    uri, "r"
-                )
-                val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-                val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-                result.value = image
-                //Log.d("StringPathUri cam", uri.toString())
-                parcelFileDescriptor.close()
-                //tViewModel.onImagePathChange(uri.toString())
+    val galleryLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            coroutineScope.launch {
+                if (uri != null) {
+                    val parcelFileDescriptor = context.contentResolver.openFileDescriptor(
+                        uri, "r"
+                    )
+                    val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+                    val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                    result.value = image
+                    //Log.d("StringPathUri cam", uri.toString())
+                    parcelFileDescriptor.close()
+                    tViewModel.onImagePathChange(uri.toString())
+                }
             }
         }
-    }
 
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
         if (it && currentPhotoPath != null) {
             //Log.d("StringPathUri cam", currentPhotoPath!!)
-            //tViewModel.onImagePathChange(currentPhotoPath.toString())
+            tViewModel.onImagePathChange(currentPhotoPath.toString())
             result.value = BitmapFactory.decodeFile(currentPhotoPath)
         }
     }
 
-//    when {
-//        multiplePermissionsState.allPermissionsGranted -> {
-//            if(isCameraSelected) {
-//                cameraLauncher.launch()
-//            } else {
-//                LaunchedEffect(isCameraSelected) {
-//                    galleryLauncher.launch("image/*")
-//                }
-//            }
-//            LaunchedEffect(isCameraSelected) {
-//                coroutineScope.launch {
-//                    bottomSheetState.hide()
-//                }
-//            }
-//        }
-//        !multiplePermissionsState.allPermissionsGranted -> {
-//            Toast.makeText(context, "Permissions denied!", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
-
-    ModalBottomSheetLayout(
+    BottomSheetScaffold(
+        scaffoldState = bottomSheetScaffoldState,
+        sheetPeekHeight = 0.dp,
+        sheetShape = RoundedCornerShape(
+            topEnd = ContentAlpha.medium,
+            topStart = ContentAlpha.medium
+        ),
         sheetContent = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
                     .background(MaterialTheme.colors.primary.copy(0.08f))
             ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "Add Photo!",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp),
-                        color = MaterialTheme.colors.primary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.SansSerif
-                    )
-                    Divider(
-                        modifier = Modifier
-                            .height(1.dp)
-                            .background(MaterialTheme.colors.primary)
-                    )
                     Text(
                         text = "Take Photo",
                         modifier = Modifier
@@ -150,10 +133,9 @@ fun Camera() {
 
                                     cameraLauncher.launch(photoURI)
                                     coroutineScope.launch {
-                                        bottomSheetState.hide()
+                                        bottomSheetScaffoldState.bottomSheetState.collapse()
                                     }
                                 } else {
-                                    isCameraSelected = true
                                     multiplePermissionsState.launchMultiplePermissionRequest()
                                 }
                             }
@@ -176,10 +158,9 @@ fun Camera() {
                                 if (multiplePermissionsState.allPermissionsGranted) {
                                     galleryLauncher.launch("image/*")
                                     coroutineScope.launch {
-                                        bottomSheetState.hide()
+                                        bottomSheetScaffoldState.bottomSheetState.collapse()
                                     }
                                 } else {
-                                    isCameraSelected = false
                                     multiplePermissionsState.launchMultiplePermissionRequest()
                                 }
                             }
@@ -200,7 +181,7 @@ fun Camera() {
                             .fillMaxWidth()
                             .clickable {
                                 coroutineScope.launch {
-                                    bottomSheetState.hide()
+                                    bottomSheetScaffoldState.bottomSheetState.collapse()
                                 }
                             }
                             .padding(15.dp),
@@ -211,42 +192,44 @@ fun Camera() {
                 }
             }
         },
-        sheetState = bottomSheetState,
-        sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
-        modifier = Modifier
-            .background(MaterialTheme.colors.background)
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        if (!bottomSheetState.isVisible) {
-                            bottomSheetState.show()
-                        } else {
-                            bottomSheetState.hide()
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = "Take Picture",
-                    modifier = Modifier.padding(8.dp),
-                    textAlign = TextAlign.Center,
-                    color = Color.White
-                )
+        Column(Modifier.fillMaxSize()) {
+            Column() {
+                TransactionTypeSelector(tViewModel)
+                DateAlertDialog(tViewModel)
+                AccountAlertDialog(tViewModel, aViewModel)
+                CategoryAlertDialog(tViewModel)
+                AmountRow(tViewModel)
+                DescriptionRow(tViewModel)
             }
-        }
-        result.value?.let { image ->
-            Image(image.asImageBitmap(), null, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.fillMaxWidth(0.4f)) {
+                    result.value?.let { image ->
+                        Image(image.asImageBitmap(), null, )
+                    }
+                }
+                Column(Modifier.fillMaxWidth(0.6f)) {
+                    IconButton(modifier = Modifier.padding(end = 8.dp).align(Alignment.End), onClick = {
+                        coroutineScope.launch {
+                            if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                                bottomSheetScaffoldState.bottomSheetState.expand()
+                            } else {
+                                bottomSheetScaffoldState.bottomSheetState.collapse()
+                            }
+                        }
+                    }) {
+                        Icon(
+                            painterResource(R.drawable.ic_twotone_photo_camera_24),
+                            contentDescription = "Take picture"
+                        )
+                    }
+                }
+
+
+            }
+            Column() {
+                InsertTransactionButton(tViewModel, navController)
+            }
         }
     }
 }
-
-
