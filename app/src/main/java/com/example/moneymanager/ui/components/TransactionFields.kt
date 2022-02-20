@@ -13,6 +13,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,6 +30,7 @@ import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.util.formatLocalDateToString
 import com.example.moneymanager.util.getValidatedNumber
+import com.example.moneymanager.util.validateAmount
 import com.google.accompanist.flowlayout.FlowRow
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.header.MonthState
@@ -360,6 +362,7 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .fillMaxWidth()) {
         Button(modifier = Modifier.fillMaxWidth(), onClick = {
+            tViewModel.onAmountChange(validateAmount(tViewModel.amount.value))
             Log.d("ImagePath", tViewModel.imagePath.value.toString())
             tViewModel.insertTransaction()
             Log.d("ImagePath", NavigationItem.Transactions.route)
