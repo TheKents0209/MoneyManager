@@ -15,12 +15,15 @@ interface TransactionDao : GenericDao<Transaction> {
     @Query("SELECT * FROM transactions WHERE date LIKE :param")
     fun getTransactionsByMonth(param: String): LiveData<List<Transaction>>
 
-    @Query("SELECT * FROM transactions WHERE transactions.type = :type AND :params")
+    @Query("SELECT * FROM transactions WHERE transactions.type = :type AND date LIKE :params")
     fun getTransactionsByTypeAndMonth(type: Int, params: String): LiveData<List<Transaction>>
 
-    @Query("SELECT SUM(amount) FROM transactions WHERE transactions.type = :type AND :params")
+    @Query("SELECT SUM(amount) FROM transactions WHERE transactions.type = :type AND date LIKE :params")
+    fun getTransactionsSumByTypeAndDay(type: Int, params: String): LiveData<Int>
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE transactions.type = :type AND date LIKE :params")
     fun getTransactionsSumByTypeAndMonth(type: Int, params: String): LiveData<Int>
 
-    @Query("SELECT ((SELECT SUM(amount) FROM transactions WHERE transactions.type = 1 AND :params) - (SELECT SUM(amount) FROM transactions WHERE transactions.type = -1 AND :params))")
+    @Query("SELECT ((SELECT SUM(amount) FROM transactions WHERE transactions.type = 1 AND date LIKE :params) - (SELECT SUM(amount) FROM transactions WHERE transactions.type = -1 AND date LIKE :params))")
     fun getTransactionsTotalMonth(params: String): LiveData<Int>
 }

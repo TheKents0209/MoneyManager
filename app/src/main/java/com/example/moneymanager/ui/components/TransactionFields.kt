@@ -1,6 +1,7 @@
 package com.example.moneymanager.ui.components
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,8 +14,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -22,12 +23,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.compose.rememberNavController
 import com.example.moneymanager.R
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
+import com.example.moneymanager.util.areAllRequiredFieldsFilled
 import com.example.moneymanager.util.formatLocalDateToString
 import com.example.moneymanager.util.getValidatedNumber
 import com.example.moneymanager.util.validateAmount
@@ -102,7 +102,7 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
     }
 }
 @Composable
-fun ModelDialog(text: String, content: @Composable() () -> Unit) {
+fun ModelDialog(text: String, content: @Composable () -> Unit) {
     Row(modifier = Modifier.padding(4.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.fillMaxWidth(0.22f)) {
             Text(text = text,
@@ -258,7 +258,7 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
     val openDialog = remember { mutableStateOf(false) }
     var categoryString by remember { mutableStateOf("") }
     //Categorys are static atm, in the future user can add their own
-    val categorys = listOf<String>("Food", "Social Life", "Self-development", "Transportation", "Culture", "Household")
+    val categorys = listOf("Food", "Social Life", "Self-development", "Transportation", "Culture", "Household")
     ModelDialog(text = "Category") {
         TextField(
             value = categoryString,
@@ -357,16 +357,27 @@ fun DescriptionRow(tViewModel: TransactionViewModel) {
 
 @Composable
 fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: NavController) {
+    val context = LocalContext.current
     Row(
         Modifier
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .fillMaxWidth()) {
         Button(modifier = Modifier.fillMaxWidth(), onClick = {
             tViewModel.onAmountChange(validateAmount(tViewModel.amount.value))
-            Log.d("ImagePath", tViewModel.imagePath.value.toString())
-            tViewModel.insertTransaction()
-            Log.d("ImagePath", NavigationItem.Transactions.route)
-            navController.navigate(NavigationItem.Transactions.route)
+            when {
+                areAllRequiredFieldsFilled(tViewModel) -> {
+                    Log.d("ImagePath", tViewModel.imagePath.value.toString())
+                    Log.d("ImagePath", NavigationItem.Transactions.route)
+                    tViewModel.insertTransaction()
+                    navController.navigate(NavigationItem.Transactions.route)
+                }
+                tViewModel.amount.value == "0.00" -> {
+                    Toast.makeText(context, "Required fields aren't filled or value can't be 0", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Toast.makeText(context, "Required fields aren't filled´", Toast.LENGTH_SHORT).show()
+                }
+            }
         }) {
             Text(text = "Save")
         }

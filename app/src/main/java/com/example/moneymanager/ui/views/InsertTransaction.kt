@@ -61,7 +61,7 @@ fun InsertTransaction(navController: NavController) {
             Manifest.permission.CAMERA,
         )
     )
-    var photoURI: Uri? = null
+    var photoURI: Uri?
     val coroutineScope = rememberCoroutineScope()
 
     var currentPhotoPath: String? = null
@@ -205,7 +205,7 @@ fun InsertTransaction(navController: NavController) {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth(0.4f)) {
                     result.value?.let { image ->
-                        Image(image.asImageBitmap(), null, )
+                        Image(image.asImageBitmap(), null)
                     }
                 }
                 Column(Modifier.fillMaxWidth(0.6f)) {

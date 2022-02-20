@@ -2,6 +2,7 @@ package com.example.moneymanager.util
 
 import android.util.Log
 import com.example.moneymanager.data.model.Transaction
+import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -43,7 +44,7 @@ fun getValidatedNumber(text: String): String {
 }
 
 fun validateAmount(text: String?): String {
-    if(text != null) {
+    if(text != null && text != "") {
         return String.format("%.2f", text.toFloat())
     }else {
         return "0.00"
@@ -87,4 +88,11 @@ fun listDifferentDays(list: List<Transaction>?): List<String> {
         }
     }
     return listOfDays
+}
+
+fun areAllRequiredFieldsFilled(tViewModel: TransactionViewModel): Boolean {
+    return tViewModel.category.value != "" &&
+            tViewModel.accountId.value != 0L &&
+            tViewModel.amount.value != "" &&
+            tViewModel.amount.value != "0.00"
 }
