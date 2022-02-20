@@ -22,7 +22,7 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
     private val _category = MutableLiveData("")
     val category: LiveData<String> = _category
 
-    private val _accountId = MutableLiveData(1L)
+    private val _accountId = MutableLiveData(0L)
     val accountId: LiveData<Long> = _accountId
 
     private val _amount = MutableLiveData("")
@@ -65,6 +65,7 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
 
     val transactions = transactionRepository.getAllTransactions()
 
+    fun transactionsByTypeDaily(type: Int, params: String) = transactionRepository.getTransactionsByTypeAndDay(type, params)
     fun transactionsMonthly(params: String) = transactionRepository.getTransactionsByMonth(params)
     fun transactionsByTypeMonthly(type: Int, params: String) = transactionRepository.getTransactionByTypeAndMonth(type, params)
     fun transactionsSumByTypeAndMonth(type: Int, params: String) = transactionRepository.getTransactionsSumByTypeAndMonth(type, params)

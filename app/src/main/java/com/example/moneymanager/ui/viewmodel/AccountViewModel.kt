@@ -11,6 +11,8 @@ class AccountViewModel(private val accountRepository: AccountRepository) : Andro
 
     val accounts = accountRepository.getAllAccounts()
 
+    fun getAccountWithId(id: Long) = accountRepository.getAccountWithId(id)
+
     fun insertAccount(account: Account) {
         viewModelScope.launch {
             accountRepository.insertAccount(account)

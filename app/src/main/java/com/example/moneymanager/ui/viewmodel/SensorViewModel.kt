@@ -3,7 +3,7 @@ package com.example.moneymanager.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class SensorViewModel(): ViewModel() {
+class SensorViewModel: ViewModel() {
     var isShaken: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     fun shake() {
