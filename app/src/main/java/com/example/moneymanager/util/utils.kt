@@ -1,6 +1,8 @@
 package com.example.moneymanager.util
 
 import android.util.Log
+import com.example.moneymanager.data.model.Transaction
+import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
@@ -36,7 +38,15 @@ fun getValidatedNumber(text: String): String {
         val afterDecimal = filteredChars.substringAfter('.')
         beforeDecimal.take(6) + "." + afterDecimal.take(2)    // If decimal is present, take first 6 digits before decimal and first 2 digits after decimal
     } else {
-        filteredChars.take(6)                     // If there is no decimal, just take the first 6 digits
+        filteredChars.take(6)              // If there is no decimal, just take the first 6 digits
+    }
+}
+
+fun validateAmount(text: String?): String {
+    if(text != null) {
+        return String.format("%.2f", text.toFloat())
+    }else {
+        return "0.00"
     }
 }
 
@@ -52,18 +62,29 @@ fun currencyStringToInt(input: String?): Int {
 
 
 fun intToCurrencyString(input: Int?): String {
-    if (input?.length()!! >= 3) {
+    val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
+    if (input != null && input.length() >= 3) {
         val str = input.toString()
         val sb = StringBuilder(str)
         val newVal = sb.insert(str.length - 2, ".").toString()
         Log.d("INT", newVal)
-        return newVal
+        return formatter.format(newVal.toDouble())
     } else {
-        return "0.00"
+        return formatter.format("0.00".toDouble())
     }
 }
 
 fun Int.length() = when (this) {
     0 -> 1
     else -> kotlin.math.log10(kotlin.math.abs(toDouble())).toInt() + 1
+}
+
+fun listDifferentDays(list: List<Transaction>?): List<String> {
+    val listOfDays = mutableListOf<String>()
+    list?.forEach {
+        if(!listOfDays.contains(formatStringToDate(it.date).dayOfMonth.toString())) {
+            listOfDays += formatStringToDate(it.date).dayOfMonth.toString()
+        }
+    }
+    return listOfDays
 }

@@ -66,6 +66,10 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
     val transactions = transactionRepository.getAllTransactions()
 
     fun transactionsMonthly(params: String) = transactionRepository.getTransactionsByMonth(params)
+    fun transactionsByTypeMonthly(type: Int, params: String) = transactionRepository.getTransactionByTypeAndMonth(type, params)
+    fun transactionsSumByTypeAndMonth(type: Int, params: String) = transactionRepository.getTransactionsSumByTypeAndMonth(type, params)
+    fun transactionsTotalMonthly(params: String) = transactionRepository.getTransactionsTotalMonth(params)
+
 
     fun insertTransaction(t: Transaction) = viewModelScope.launch {
         transactionRepository.insertTransaction(t)
