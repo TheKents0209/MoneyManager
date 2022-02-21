@@ -8,11 +8,11 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 
-fun formatMonthDoubleDigits(monthNum: String): String {
-    if (monthNum.toInt() < 10) {
-        return "0${monthNum}"
+fun formatToDoubleDigits(n: String): String {
+    if (n.toInt() < 10) {
+        return "0${n}"
     } else {
-        return monthNum
+        return n
     }
 }
 

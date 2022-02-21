@@ -123,6 +123,7 @@ fun ModelDialog(text: String, content: @Composable () -> Unit) {
 @Composable
 fun DateAlertDialog(tViewModel:TransactionViewModel) {
     val openDialog = remember { mutableStateOf(false) }
+    Log.d("asdasd", LocalDate.parse(tViewModel.date.observeAsState().value).toString())
     val calendarState = rememberSelectableCalendarState(initialSelection = listOf(LocalDate.parse(tViewModel.date.observeAsState().value)), initialSelectionMode = SelectionMode.Single)
     var dateString by remember { mutableStateOf(formatLocalDateToString(LocalDate.now())) }
 

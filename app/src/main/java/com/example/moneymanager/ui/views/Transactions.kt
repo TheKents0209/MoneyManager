@@ -28,7 +28,7 @@ import com.example.moneymanager.data.repository.AccountRepository
 import com.example.moneymanager.data.repository.TransactionRepository
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
-import com.example.moneymanager.util.formatMonthDoubleDigits
+import com.example.moneymanager.util.formatToDoubleDigits
 import com.example.moneymanager.util.formatStringToDate
 import com.example.moneymanager.util.intToCurrencyString
 import com.example.moneymanager.util.listDifferentDays
@@ -42,7 +42,7 @@ fun TransactionScreen(navController: NavController) {
     val aViewModel = AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
 
     var now by rememberSaveable { mutableStateOf(LocalDate.now())}
-    val params = "${now.year}_${formatMonthDoubleDigits(now.monthValue.toString())}%"
+    val params = "${now.year}_${formatToDoubleDigits(now.monthValue.toString())}%"
 
     val income = tViewModel.transactionsSumByTypeAndMonth(1, params).observeAsState()
     val expense = tViewModel.transactionsSumByTypeAndMonth(-1, params).observeAsState()
@@ -109,7 +109,7 @@ fun TransactionScreen(navController: NavController) {
             //Every different day gets highlighted row and list of transactions for that day
             listOfIndividualDays.forEach { dateString ->
                 //val asd = tViewModel.transactionsByTypeDaily(-1, "${now.year}_${formatMonthDoubleDigits(now.monthValue.toString())}_$dateString%").observeAsState().value
-                val dayParams = "${now.year}_${formatMonthDoubleDigits(now.monthValue.toString())}_$dateString"
+                val dayParams = "${now.year}_${formatToDoubleDigits(now.monthValue.toString())}_$dateString"
                 Log.d("dayParams", dayParams)
                 item {
                     //Highlighted row
@@ -122,7 +122,7 @@ fun TransactionScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.Start
                         ) {
                             Text(text = dateString, fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp))
-                            Text(text = LocalDate.parse("${now.year}-${formatMonthDoubleDigits(now.monthValue.toString())}-$dateString").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
+                            Text(text = LocalDate.parse("${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
 
                         }
                         Row(modifier = Modifier.fillMaxSize()
