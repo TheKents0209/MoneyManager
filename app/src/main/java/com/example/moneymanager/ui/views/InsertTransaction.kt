@@ -1,3 +1,5 @@
+package com.example.moneymanager.ui.views
+
 import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -35,6 +37,7 @@ import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileDescriptor
@@ -43,12 +46,7 @@ import java.io.FileDescriptor
 //https://github.com/MakeItEasyDev/Jetpack-Compose-Capture-Image-Or-Choose-from-Gallery/blob/main/app/src/main/java/com/jetpack/takecamerapicture/MainActivity.kt
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
-fun InsertTransaction(navController: NavController) {
-    val tViewModel = TransactionViewModel(
-        TransactionRepository(
-            DB.getInstance(LocalContext.current).TransactionDao()
-        )
-    )
+fun InsertTransaction(tViewModel: TransactionViewModel, navController: NavController, isUpdate: Boolean) {
     val aViewModel =
         AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
 
@@ -72,7 +70,7 @@ fun InsertTransaction(navController: NavController) {
 
     val galleryLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            coroutineScope.launch {
+            coroutineScope.launch(Dispatchers.IO) {
                 if (uri != null) {
                     val parcelFileDescriptor = context.contentResolver.openFileDescriptor(
                         uri, "r"
@@ -209,7 +207,9 @@ fun InsertTransaction(navController: NavController) {
                     }
                 }
                 Column(Modifier.fillMaxWidth(0.6f)) {
-                    IconButton(modifier = Modifier.padding(end = 8.dp).align(Alignment.End), onClick = {
+                    IconButton(modifier = Modifier
+                        .padding(end = 8.dp)
+                        .align(Alignment.End), onClick = {
                         coroutineScope.launch {
                             if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
                                 bottomSheetScaffoldState.bottomSheetState.expand()
@@ -224,12 +224,17 @@ fun InsertTransaction(navController: NavController) {
                         )
                     }
                 }
-
-
             }
             Column() {
-                InsertTransactionButton(tViewModel, navController)
+                InsertTransactionButton(tViewModel, navController, isUpdate)
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
+@Composable
+fun InsertTransaction(navController: NavController) {
+    val tViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
+    InsertTransaction(tViewModel, navController, false)
 }

@@ -7,6 +7,7 @@ import com.example.moneymanager.data.model.Transaction
 class TransactionRepository(private val dbDao: TransactionDao) {
 
     fun getAllTransactions(): LiveData<List<Transaction>> = dbDao.getAll()
+    fun getTransactionWithId(id: Long): LiveData<Transaction> = dbDao.getTransactionWithId(id)
     fun getTransactionsByMonth(params: String): LiveData<List<Transaction>> = dbDao.getTransactionsByMonth(params)
     fun getTransactionByTypeAndMonth(type: Int, params: String): LiveData<List<Transaction>> = dbDao.getTransactionsByTypeAndMonth(type, params)
     fun getTransactionsByTypeAndDay(type: Int, params: String): LiveData<Int> = dbDao.getTransactionsSumByTypeAndDay(type, params)
@@ -15,4 +16,6 @@ class TransactionRepository(private val dbDao: TransactionDao) {
     fun getTransactionsTotalMonth(params: String): LiveData<Int> = dbDao.getTransactionsTotalMonth(params)
 
     suspend fun insertTransaction(t: Transaction) = dbDao.insert(t)
+    suspend fun updateTransaction(t: Transaction) = dbDao.update(t)
+    suspend fun deleteTransaction(t: Transaction) = dbDao.delete(t)
 }
