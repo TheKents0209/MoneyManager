@@ -24,6 +24,6 @@ interface TransactionDao : GenericDao<Transaction> {
     @Query("SELECT SUM(amount) FROM transactions WHERE transactions.type = :type AND date LIKE :params")
     fun getTransactionsSumByTypeAndMonth(type: Int, params: String): LiveData<Int>
 
-    @Query("SELECT ((SELECT SUM(amount) FROM transactions WHERE transactions.type = 1 AND date LIKE :params) - (SELECT SUM(amount) FROM transactions WHERE transactions.type = -1 AND date LIKE :params))")
+    @Query("SELECT COALESCE( (SELECT SUM(amount) FROM transactions WHERE transactions.type = 1 AND date LIKE :params), 0) - COALESCE( (SELECT SUM(amount) FROM transactions WHERE transactions.type = -1 AND date LIKE :params), 0)")
     fun getTransactionsTotalMonth(params: String): LiveData<Int>
 }

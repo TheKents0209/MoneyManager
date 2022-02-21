@@ -1,37 +1,34 @@
 package com.example.moneymanager
 
-import InsertTransaction
+import com.example.moneymanager.ui.views.InsertTransaction
 import android.app.Activity
 import android.content.Context
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.moneymanager.data.database.DB
 import com.example.moneymanager.data.model.Account
-import com.example.moneymanager.data.model.Transaction
 import com.example.moneymanager.data.repository.AccountRepository
-import com.example.moneymanager.data.repository.TransactionRepository
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.SensorViewModel
-import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.ui.views.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.squareup.seismic.ShakeDetector
@@ -54,26 +51,10 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
         firstLaunch = prefGet.getBoolean("isFirstLaunch", true)
 
         if (firstLaunch) {
-            val accountViewModel =
-                AccountViewModel(AccountRepository(DB.getInstance(application).AccountDao()))
-            val transactionViewModel = TransactionViewModel(
-                TransactionRepository(
-                    DB.getInstance(application).TransactionDao()
-                )
-            )
+            val accountViewModel = AccountViewModel(AccountRepository(DB.getInstance(application).AccountDao()))
+
             accountViewModel.insertAccount(Account(0, "Bank", "Nordea", 10000, true))
-            transactionViewModel.insertTransaction(
-                Transaction(
-                    0,
-                    -1,
-                    "2022-02-16",
-                    "Food",
-                    1,
-                    2000,
-                    "",
-                    ""
-                )
-            )
+            accountViewModel.insertAccount(Account(0, "Bank", "S-pankki", 10000, true))
 
             val prefPut = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
             val prefEditor = prefPut.edit()
@@ -102,17 +83,16 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
-        val currentRouteDestination =
-            navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route
+        val currentRouteDestination = navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route
         val isShaken by sViewModel.isShaken.collectAsState()
         LaunchedEffect(isShaken) {
-            if (isShaken && currentRouteDestination != "AddTransaction") {
-                navController.navigate("AddTransaction")
+            if (isShaken && currentRouteDestination != "addTransaction") {
+                navController.navigate("addTransaction")
             }
         }
         Scaffold(
             topBar = {
-                if (currentRouteDestination == "AddTransaction") {
+                if (currentRouteDestination == "addTransaction") {
                     TopAppBar(
                         title = { Text(text = "Transaction") },
                         navigationIcon = {
@@ -130,29 +110,19 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
                 }
             },
             bottomBar = {
-                if (currentRouteDestination != "AddTransaction") {
+                if (currentRouteDestination != "addTransaction") {
                     BottomNavigationBar(navController)
                 }
-                if (currentRouteDestination == "AddTransaction") {
+                if (currentRouteDestination == "addTransaction") {
                     InsertTransaction(navController)
                 }
             },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { navController.navigate("AddTransaction") },
-                    //When navigation route is on Transactions, set FAB size to 48dp, else 0
-                    modifier =
-                    when (currentRouteDestination) {
-                        NavigationItem.Transactions.route -> Modifier.size(48.dp)
-                        //Dirty way, but navigation route is null only on startup anyway
-                        null -> Modifier.size(48.dp)
-                        else -> {
-                            Modifier.size(0.dp)
-                        }
+                if(currentRouteDestination == "transactions" || currentRouteDestination == null) {
+                    FloatingActionButton(onClick = { navController.navigate("addTransaction") })
+                    {
+                        Icon(Icons.TwoTone.Add, contentDescription = "Add transaction")
                     }
-                )
-                {
-                    Icon(Icons.TwoTone.Add, contentDescription = "Add transaction")
                 }
             }
         ) {
@@ -207,7 +177,7 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
     fun Navigation(navController: NavHostController) {
         NavHost(navController, startDestination = NavigationItem.Transactions.route) {
             composable(NavigationItem.Transactions.route) {
-                TransactionScreen()
+                TransactionScreen(navController)
                 sViewModel.reset()
             }
             composable(NavigationItem.Stats.route) {
@@ -219,8 +189,11 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
             composable(NavigationItem.Settings.route) {
                 SettingsScreen()
             }
-            composable("AddTransaction") {
+            composable("addTransaction") {
                 InsertTransaction(navController)
+            }
+            composable("editTransaction/{transactionId}", arguments = listOf(navArgument("transactionId") { type = NavType.LongType })) { backStackEntry ->
+                EditTransaction(backStackEntry.arguments?.getLong("transactionId"), navController)
             }
         }
     }

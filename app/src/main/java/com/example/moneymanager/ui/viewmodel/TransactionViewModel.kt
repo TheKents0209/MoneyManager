@@ -13,6 +13,9 @@ import java.time.LocalDate
 
 class TransactionViewModel(private val transactionRepository: TransactionRepository) : AndroidViewModel(Application()) {
 
+    private val _id = MutableLiveData(0L)
+    val id: LiveData<Long> = _id
+
     private val _type = MutableLiveData(-1)
     val type: LiveData<Int> = _type
 
@@ -33,6 +36,10 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
 
     private val _imagePath = MutableLiveData("")
     val imagePath: LiveData<String> = _imagePath
+
+    fun onIdChange(newId: Long) {
+        _id.value = newId
+    }
 
     fun onTypeChange(newType: Int) {
         _type.value = newType
@@ -65,18 +72,21 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
 
     val transactions = transactionRepository.getAllTransactions()
 
+    fun transactionWithId(id: Long) = transactionRepository.getTransactionWithId(id)
     fun transactionsByTypeDaily(type: Int, params: String) = transactionRepository.getTransactionsByTypeAndDay(type, params)
     fun transactionsMonthly(params: String) = transactionRepository.getTransactionsByMonth(params)
     fun transactionsByTypeMonthly(type: Int, params: String) = transactionRepository.getTransactionByTypeAndMonth(type, params)
     fun transactionsSumByTypeAndMonth(type: Int, params: String) = transactionRepository.getTransactionsSumByTypeAndMonth(type, params)
     fun transactionsTotalMonthly(params: String) = transactionRepository.getTransactionsTotalMonth(params)
 
-
-    fun insertTransaction(t: Transaction) = viewModelScope.launch {
-        transactionRepository.insertTransaction(t)
-    }
     fun insertTransaction() = viewModelScope.launch {
         //null checks
-        transactionRepository.insertTransaction(Transaction(0, type.value!!, date.value!!, category.value!!, accountId.value!!, currencyStringToInt(amount.value), description.value!!, imagePath.value!!))
+        transactionRepository.insertTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, currencyStringToInt(amount.value), description.value!!, imagePath.value!!))
+    }
+    fun updateTransaction() = viewModelScope.launch {
+        transactionRepository.updateTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, currencyStringToInt(amount.value), description.value!!, imagePath.value!!))
+    }
+    fun deleteTransaction() = viewModelScope.launch {
+        transactionRepository.deleteTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, currencyStringToInt(amount.value), description.value!!, imagePath.value!!))
     }
 }

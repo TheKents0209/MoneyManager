@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.moneymanager.R
 import com.example.moneymanager.data.database.DB
 import com.example.moneymanager.data.repository.AccountRepository
@@ -36,7 +37,7 @@ import java.time.format.TextStyle
 import java.util.*
 
 @Composable
-fun TransactionScreen() {
+fun TransactionScreen(navController: NavController) {
     val tViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
     val aViewModel = AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
 
@@ -142,6 +143,7 @@ fun TransactionScreen() {
                                     .fillMaxWidth()
                                     .clickable {
                                         //Opens transaction information
+                                        navController.navigate("editTransaction/${it.transactionId}")
                                     }
                                 ) {
                                     Row(modifier = Modifier.fillMaxWidth(0.7f)) {

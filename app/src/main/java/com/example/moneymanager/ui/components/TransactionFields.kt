@@ -44,9 +44,14 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
         stringResource(id = R.string.income),
         stringResource(id = R.string.expenses)
     )
-
     val expenseString = stringResource(id = R.string.expenses)
+    val incomeString = stringResource(id = R.string.income)
     var selectedOption by remember { mutableStateOf(expenseString) }
+    val currentValue = tViewModel.type.observeAsState().value
+    if(currentValue == 1) {
+        selectedOption = incomeString
+    }
+
     //Whichever text/option is clicked, changes selectedOption to that text
     val onSelectionChange = { text: String -> selectedOption = text }
 
@@ -118,9 +123,10 @@ fun ModelDialog(text: String, content: @Composable () -> Unit) {
 @Composable
 fun DateAlertDialog(tViewModel:TransactionViewModel) {
     val openDialog = remember { mutableStateOf(false) }
-    val calendarState = rememberSelectableCalendarState(initialSelection = listOf(LocalDate.now()), initialSelectionMode = SelectionMode.Single)
+    val calendarState = rememberSelectableCalendarState(initialSelection = listOf(LocalDate.parse(tViewModel.date.observeAsState().value)), initialSelectionMode = SelectionMode.Single)
     var dateString by remember { mutableStateOf(formatLocalDateToString(LocalDate.now())) }
 
+    dateString = formatLocalDateToString(LocalDate.parse(tViewModel.date.observeAsState().value))
     ModelDialog(text = "Date") {
         TextField(
             value = dateString,
@@ -139,7 +145,9 @@ fun DateAlertDialog(tViewModel:TransactionViewModel) {
     }
 
     if (openDialog.value) {
-        var selectedDate: LocalDate = LocalDate.now()
+        var selectedDate by remember { mutableStateOf(LocalDate.parse(tViewModel.date.value))}
+        Log.d("selectedDate", selectedDate.toString())
+       // var selectedDate: LocalDate = LocalDate.parse(tViewModel.date.observeAsState().value)
         AlertDialog(
             onDismissRequest = {
                 // Dismiss the dialog when the user clicks outside the dialog or on the back
@@ -194,6 +202,14 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
     val openDialog = remember { mutableStateOf(false) }
     var accountString by remember { mutableStateOf("") }
     val accounts = aViewModel.accounts.observeAsState()
+
+    accountString = tViewModel.accountId.observeAsState().value?.let {
+        aViewModel.getAccountWithId(
+            it
+        ).observeAsState().value?.name
+    }
+        ?: ""
+
     ModelDialog(text = "Account") {
         TextField(
             value = accountString,
@@ -259,6 +275,9 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
     var categoryString by remember { mutableStateOf("") }
     //Categorys are static atm, in the future user can add their own
     val categorys = listOf("Food", "Social Life", "Self-development", "Transportation", "Culture", "Household")
+
+    categoryString = tViewModel.category.observeAsState().value ?: ""
+
     ModelDialog(text = "Category") {
         TextField(
             value = categoryString,
@@ -356,30 +375,55 @@ fun DescriptionRow(tViewModel: TransactionViewModel) {
 }
 
 @Composable
-fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: NavController) {
+fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: NavController, isUpdate: Boolean) {
     val context = LocalContext.current
-    Row(
-        Modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .fillMaxWidth()) {
-        Button(modifier = Modifier.fillMaxWidth(), onClick = {
-            tViewModel.onAmountChange(validateAmount(tViewModel.amount.value))
-            when {
-                areAllRequiredFieldsFilled(tViewModel) -> {
-                    Log.d("ImagePath", tViewModel.imagePath.value.toString())
-                    Log.d("ImagePath", NavigationItem.Transactions.route)
-                    tViewModel.insertTransaction()
+    Column() {
+        Row(
+            Modifier
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .fillMaxWidth()
+        ) {
+            Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                tViewModel.onAmountChange(validateAmount(tViewModel.amount.value))
+                when {
+                    areAllRequiredFieldsFilled(tViewModel) -> {
+                        Log.d("ImagePath", tViewModel.imagePath.value.toString())
+                        Log.d("ImagePath", NavigationItem.Transactions.route)
+                        if(isUpdate) {
+                            tViewModel.updateTransaction()
+                        } else {
+                            tViewModel.insertTransaction()
+                        }
+                        navController.navigate(NavigationItem.Transactions.route)
+                    }
+                    tViewModel.amount.value == "0.00" -> {
+                        Toast.makeText(context, "Required fields aren't filled or value can't be 0", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(context, "Required fields aren't filled", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }) {
+                Text(text = "Save")
+            }
+        }
+        if(isUpdate) {
+            Row(Modifier
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .fillMaxWidth()
+            )
+            {
+                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    //AlertDialog opens which contains warning + delete button
+                    tViewModel.deleteTransaction()
                     navController.navigate(NavigationItem.Transactions.route)
-                }
-                tViewModel.amount.value == "0.00" -> {
-                    Toast.makeText(context, "Required fields aren't filled or value can't be 0", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    Toast.makeText(context, "Required fields aren't filled´", Toast.LENGTH_SHORT).show()
+                }, colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Red,
+                    contentColor = Color.White
+                )) {
+                    Text(text = "Delete")
                 }
             }
-        }) {
-            Text(text = "Save")
         }
     }
 }
