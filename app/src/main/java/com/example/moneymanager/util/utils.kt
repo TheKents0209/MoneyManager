@@ -53,22 +53,30 @@ fun validateAmount(text: String?): String {
 
 fun currencyStringToInt(input: String?): Int {
     val pattern = Regex("[.,]")
-    val newVal = input?.replace(pattern, "")
-    if (newVal?.length == 0) {
-        return 0
+    var newVal = input?.replace(pattern, "")
+    newVal = (newVal?.toInt()?.times(100)).toString()
+    return if (newVal.isEmpty()) {
+        0
     } else {
-        return newVal!!.toInt()
+        newVal.toInt()
     }
 }
 
 
 fun intToCurrencyString(input: Int?): String {
     val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
-    if (input != null && input.length() >= 3) {
-        val str = input.toString()
+    Log.d("input", input.toString())
+    if (input != null && input.length() >= 4) {
+        val div = input/100
+        val str = div.toString()
         val sb = StringBuilder(str)
         val newVal = sb.insert(str.length - 2, ".").toString()
-        Log.d("INT", newVal)
+        return formatter.format(newVal.toDouble())
+    } else if(input != null && input.length() <= 3){
+        val div = input/10
+        val str = div.toString()
+        val sb = StringBuilder(str)
+        val newVal = sb.insert(str.length - 2, ".0").toString()
         return formatter.format(newVal.toDouble())
     } else {
         return formatter.format("0.00".toDouble())
