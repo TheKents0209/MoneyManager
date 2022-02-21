@@ -9,7 +9,7 @@ With this app you can keep track of your incomes and expenses
 ## Usage
 
 Using MoneyManager is easy, just download the project / or clone by 
-```$ git clone https://github.com/TheKents0209/MoneyManager.git ``` command
+```$ git clone https://github.com/TheKents0209/MoneyManager.git``` command
 
 
 ## 3rd party libraries used
