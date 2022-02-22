@@ -49,6 +49,9 @@ android {
 }
 
 dependencies {
+    //Charts
+    implementation 'com.github.tehras:charts:master-SNAPSHOT'
+
     //Seismic
     implementation 'com.squareup:seismic:1.0.3'
 

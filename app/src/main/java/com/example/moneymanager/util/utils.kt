@@ -1,12 +1,14 @@
 package com.example.moneymanager.util
 
 import android.util.Log
+import androidx.compose.ui.graphics.Color
 import com.example.moneymanager.data.model.Transaction
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
+import kotlin.random.Random
 
 fun formatToDoubleDigits(n: String): String {
     if (n.toInt() < 10) {
@@ -72,7 +74,7 @@ fun intToCurrencyString(input: Int?): String {
         val sb = StringBuilder(str)
         val newVal = sb.insert(str.length - 2, ".").toString()
         return formatter.format(newVal.toDouble())
-    } else if(input != null && input.length() <= 3){
+    } else if(input != null && input.length() == 3){
         val div = input/10
         val str = div.toString()
         val sb = StringBuilder(str)
@@ -98,9 +100,52 @@ fun listDifferentDays(list: List<Transaction>?): List<String> {
     return listOfDays
 }
 
+fun listDifferentCategorysAndAmounts(list: List<Transaction>?): Map<String, Int> {
+    val map = mutableMapOf<String, Int>()
+
+    list?.forEach {
+        if (!map.containsKey(it.category)) {
+            map.put(it.category, it.amount)
+        } else {
+            val currentValue = map.getValue(it.category)
+            map.put(it.category, currentValue + it.amount)
+        }
+    }
+    //https://www.programiz.com/kotlin-programming/examples/sort-map-values
+    return map.toList().sortedBy { (_, value) -> value }.asReversed().toMap()
+}
+
 fun areAllRequiredFieldsFilled(tViewModel: TransactionViewModel): Boolean {
     return tViewModel.category.value != "" &&
             tViewModel.accountId.value != 0L &&
             tViewModel.amount.value != "" &&
             tViewModel.amount.value != "0.00"
+}
+
+fun pickColor(index: Int) : Color {
+    //TODO: Generate color scale that's visibly different enough
+    val colors = mutableListOf(
+        Color(0XFFFF4744),
+        Color(0XFFFF7F44),
+        Color(0XFFFFB744),
+        Color(0XFFFFEF44),
+        Color(0XFFD7FF44),
+        Color(0XFF9FFF44),
+        Color(0XFF66FF44),
+        Color(0XFF44FF92),
+        Color(0XFF44FCFF),
+        Color(0XFFFF5722),
+        Color(0XFF795548),
+        Color(0XFF9E9E9E),
+        Color(0XFF607D8B)
+    )
+    //Failsafe if colors list run out
+    if(colors.size >= index) {
+        return colors[index]
+    }
+    return Color(
+            Random.nextInt(0, 255),
+            Random.nextInt(0, 255),
+            Random.nextInt(0, 255)
+    )
 }
