@@ -20,7 +20,7 @@ private val LightColorPalette = lightColors(
     primaryVariant = Gold,
     secondary = Vermilion,
     secondaryVariant = Gray,
-    background = Snow,
+    background = Cultured,
     onBackground = RichBlack,
 
     /* Other default colors to override

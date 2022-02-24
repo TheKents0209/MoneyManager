@@ -147,7 +147,7 @@ fun TransactionScreen(navController: NavController) {
                                     }
                                 ) {
                                     Row(modifier = Modifier.fillMaxWidth(0.7f)) {
-                                        Text(text = it.category,
+                                        Text(text = it.category, // category
                                             modifier = Modifier
                                                 .fillMaxWidth(.25f)
                                                 .align(Alignment.CenterVertically),
@@ -156,7 +156,7 @@ fun TransactionScreen(navController: NavController) {
                                             overflow = TextOverflow.Ellipsis,
                                             maxLines = 1
                                         )
-                                        Text(text = aViewModel.getAccountWithId(it.accountId).observeAsState().value?.name ?: "",
+                                        Text(text = aViewModel.getAccountWithId(it.accountId).observeAsState().value?.name ?: "", // account
                                             modifier = Modifier
                                                 .align(Alignment.CenterVertically)
                                                 .padding(start = 16.dp)
@@ -168,7 +168,7 @@ fun TransactionScreen(navController: NavController) {
                                         )
                                     }
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                        Text(text = intToCurrencyString(it.amount), color =
+                                        Text(text = intToCurrencyString(it.amount), color = // sininen ja punainen amount, ei tarvitse vaihtaa
                                         (if (it.type == 1) {
                                             MaterialTheme.colors.primary
                                         }else {
