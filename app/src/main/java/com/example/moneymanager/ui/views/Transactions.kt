@@ -121,19 +121,19 @@ fun TransactionScreen(navController: NavController) {
                             .fillMaxWidth(0.5f),
                             horizontalArrangement = Arrangement.Start
                         ) {
-                            Text(text = dateString, fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp))
-                            Text(text = LocalDate.parse("${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
+                            Text(text = dateString, fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp)) //pvm
+                            Text(text = LocalDate.parse("${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp)) // viikon pvm
 
                         }
                         Row(modifier = Modifier.fillMaxSize()
                             .padding(end = 6.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(1, dayParams).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.primary)
-                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(-1, dayParams).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.secondary)
+                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(1, dayParams).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.primary) // sininen text,
+                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(-1, dayParams).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.secondary) // punainen text,
                         }
                     }
-                    Divider(thickness = 1.dp)
+                    Divider(thickness = 1.dp) // välit tähän
                     //List for each transaction that day
                     Column() {
                         list.value?.asReversed()?.forEach {
