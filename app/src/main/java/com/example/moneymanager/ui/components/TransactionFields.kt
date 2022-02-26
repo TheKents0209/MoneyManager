@@ -27,10 +27,7 @@ import com.example.moneymanager.R
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
-import com.example.moneymanager.util.areAllRequiredFieldsFilled
-import com.example.moneymanager.util.formatLocalDateToString
-import com.example.moneymanager.util.getValidatedNumber
-import com.example.moneymanager.util.validateAmount
+import com.example.moneymanager.util.*
 import com.google.accompanist.flowlayout.FlowRow
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.header.MonthState
@@ -203,13 +200,28 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
     val openDialog = remember { mutableStateOf(false) }
     var accountString by remember { mutableStateOf("") }
     val accounts = aViewModel.accounts.observeAsState()
+    var accountId by remember { mutableStateOf(0L)}
 
-    accountString = tViewModel.accountId.observeAsState().value?.let {
-        aViewModel.getAccountWithId(
-            it
-        ).observeAsState().value?.name
+    val initAccount =
+        aViewModel.originalId.value?.let { aViewModel.getAccountWithId(it).observeAsState().value }
+    if (initAccount != null) {
+        accountString = "${initAccount.name} (${initAccount.group})"
+        aViewModel.onIdChange(initAccount.id)
+        aViewModel.onGroupChange(initAccount.group)
+        aViewModel.onAmountChange(initAccount.amount)
+        aViewModel.onNameChange(initAccount.name)
+        aViewModel.onIncludeChange(initAccount.includeInTotals)
     }
-        ?: ""
+
+    val selectedAccount = aViewModel.getAccountWithId(accountId).observeAsState().value
+    if (selectedAccount != null) {
+        accountString = "${selectedAccount.name} (${selectedAccount.group})"
+        aViewModel.onIdChange(selectedAccount.id)
+        aViewModel.onGroupChange(selectedAccount.group)
+        aViewModel.onAmountChange(selectedAccount.amount)
+        aViewModel.onNameChange(selectedAccount.name)
+        aViewModel.onIncludeChange(selectedAccount.includeInTotals)
+    }
 
     ModelDialog(text = "Account") {
         TextField(
@@ -249,6 +261,7 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
                                 .clickable {
                                     accountString = "${account.name} (${account.group})"
                                     tViewModel.onAccountIdChange(account.id)
+                                    accountId = account.id
                                     openDialog.value = false
                                 },
                             contentAlignment = Alignment.Center,
@@ -340,12 +353,16 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
 
 @Composable
 fun AmountRow(tViewModel: TransactionViewModel) {
-    val amountValue by tViewModel.amount.observeAsState()
-    val onAmountChange : ((String) -> Unit) = { tViewModel.onAmountChange(getValidatedNumber(it)) }
+    val amountValue = tViewModel.amount.observeAsState().value
+    var amountValueString by remember { mutableStateOf(intToCurrencyString(amountValue)) }
+    val onAmountChange : ((String) -> Unit) = {
+        amountValueString = getValidatedNumber(it)
+        tViewModel.onAmountChange(currencyStringToInt(validateAmount(amountValueString)))
+    }
 
     ModelDialog(text = "Amount") {
         TextField(
-            value = amountValue.toString(),
+            value = amountValueString,
             textStyle = TextStyle(fontSize = 14.sp),
             onValueChange = onAmountChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -385,7 +402,6 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
                 .fillMaxWidth()
         ) {
             Button(modifier = Modifier.fillMaxWidth(), onClick = {
-                tViewModel.onAmountChange(validateAmount(tViewModel.amount.value))
                 when {
                     areAllRequiredFieldsFilled(tViewModel) -> {
                         Log.d("ImagePath", tViewModel.imagePath.value.toString())
@@ -397,7 +413,7 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
                         }
                         navController.navigate(NavigationItem.Transactions.route)
                     }
-                    tViewModel.amount.value == "0.00" -> {
+                    tViewModel.amount.value == 0 -> {
                         Toast.makeText(context, "Required fields aren't filled or value can't be 0", Toast.LENGTH_SHORT).show()
                     }
                     else -> {

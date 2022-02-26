@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.moneymanager.data.model.Transaction
 import com.example.moneymanager.data.repository.TransactionRepository
-import com.example.moneymanager.util.currencyStringToInt
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -28,8 +27,8 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
     private val _accountId = MutableLiveData(0L)
     val accountId: LiveData<Long> = _accountId
 
-    private val _amount = MutableLiveData("")
-    val amount: LiveData<String> = _amount
+    private val _amount = MutableLiveData(0)
+    val amount: LiveData<Int> = _amount
 
     private val _description = MutableLiveData("")
     val description: LiveData<String> = _description
@@ -57,7 +56,7 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
         _accountId.value = newId
     }
 
-    fun onAmountChange(newAmount: String) {
+    fun onAmountChange(newAmount: Int) {
         _amount.value = newAmount
     }
 
@@ -81,12 +80,12 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
 
     fun insertTransaction() = viewModelScope.launch {
         //null checks
-        transactionRepository.insertTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, currencyStringToInt(amount.value), description.value!!, imagePath.value!!))
+        transactionRepository.insertTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, amount.value!!, description.value!!, imagePath.value!!))
     }
     fun updateTransaction() = viewModelScope.launch {
-        transactionRepository.updateTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, currencyStringToInt(amount.value), description.value!!, imagePath.value!!))
+        transactionRepository.updateTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, amount.value!!, description.value!!, imagePath.value!!))
     }
     fun deleteTransaction() = viewModelScope.launch {
-        transactionRepository.deleteTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, currencyStringToInt(amount.value), description.value!!, imagePath.value!!))
+        transactionRepository.deleteTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, amount.value!!, description.value!!, imagePath.value!!))
     }
 }

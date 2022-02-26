@@ -1,7 +1,7 @@
 package com.example.moneymanager.util
 
-import android.util.Log
 import androidx.compose.ui.graphics.Color
+import com.example.moneymanager.data.model.Account
 import com.example.moneymanager.data.model.Transaction
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import java.text.NumberFormat
@@ -45,43 +45,42 @@ fun getValidatedNumber(text: String): String {
     }
 }
 
-fun validateAmount(text: String?): String {
-    if(text != null && text != "") {
-        return String.format("%.2f", text.toFloat())
-    }else {
-        return "0.00"
+fun intToCurrencyString(input: Int?): String {
+    val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
+    if(input != null) {
+        if(input.length() >= 2) {
+            val div = input
+            val str = div.toString()
+            val sb = StringBuilder(str)
+            val newVal = sb.insert(str.length - 2, ".").toString()
+            return formatter.format(newVal.toDouble())
+        } else if(input.length() == 1) {
+            val div = input
+            val str = div.toString()
+            val sb = StringBuilder(str)
+            val newVal = sb.insert(str.length -1, ".0").toString()
+            return formatter.format(newVal.toDouble())
+        }
     }
+    return formatter.format("0.00".toDouble())
 }
 
 fun currencyStringToInt(input: String?): Int {
-    val pattern = Regex("[.,]")
-    var newVal = input?.replace(pattern, "")
-    newVal = (newVal?.toInt()?.times(100)).toString()
-    return if (newVal.isEmpty()) {
+    val pattern = Regex("[^0-9]")
+    val newVal = input?.replace(pattern, "")
+
+    return if(newVal.isNullOrEmpty()) {
         0
     } else {
         newVal.toInt()
     }
 }
 
-
-fun intToCurrencyString(input: Int?): String {
-    val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
-    Log.d("input", input.toString())
-    if (input != null && input.length() >= 4) {
-        val div = input/100
-        val str = div.toString()
-        val sb = StringBuilder(str)
-        val newVal = sb.insert(str.length - 2, ".").toString()
-        return formatter.format(newVal.toDouble())
-    } else if(input != null && input.length() == 3){
-        val div = input/10
-        val str = div.toString()
-        val sb = StringBuilder(str)
-        val newVal = sb.insert(str.length - 2, ".0").toString()
-        return formatter.format(newVal.toDouble())
-    } else {
-        return formatter.format("0.00".toDouble())
+fun validateAmount(text: String?): String {
+    return if(text != null && text != "" && text != "." && text != ",") {
+        String.format("%.2f", text.toFloat())
+    }else {
+        "0.00"
     }
 }
 
@@ -98,6 +97,16 @@ fun listDifferentDays(list: List<Transaction>?): List<String> {
         }
     }
     return listOfDays
+}
+
+fun listDifferentGroups(list: List<Account>?): List<String> {
+    val listOfGroups = mutableListOf<String>()
+    list?.forEach {
+        if(!listOfGroups.contains(it.group)) {
+            listOfGroups += it.group
+        }
+    }
+    return listOfGroups
 }
 
 fun listDifferentCategorysAndAmounts(list: List<Transaction>?): Map<String, Int> {
@@ -118,8 +127,7 @@ fun listDifferentCategorysAndAmounts(list: List<Transaction>?): Map<String, Int>
 fun areAllRequiredFieldsFilled(tViewModel: TransactionViewModel): Boolean {
     return tViewModel.category.value != "" &&
             tViewModel.accountId.value != 0L &&
-            tViewModel.amount.value != "" &&
-            tViewModel.amount.value != "0.00"
+            tViewModel.amount.value != 0
 }
 
 fun pickColor(index: Int) : Color {
