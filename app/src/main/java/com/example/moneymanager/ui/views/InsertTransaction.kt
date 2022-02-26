@@ -46,9 +46,7 @@ import java.io.FileDescriptor
 //https://github.com/MakeItEasyDev/Jetpack-Compose-Capture-Image-Or-Choose-from-Gallery/blob/main/app/src/main/java/com/jetpack/takecamerapicture/MainActivity.kt
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
-fun InsertTransaction(tViewModel: TransactionViewModel, navController: NavController, isUpdate: Boolean) {
-    val aViewModel =
-        AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
+fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewModel, navController: NavController, isUpdate: Boolean) {
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -236,5 +234,6 @@ fun InsertTransaction(tViewModel: TransactionViewModel, navController: NavContro
 @Composable
 fun InsertTransaction(navController: NavController) {
     val tViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
-    InsertTransaction(tViewModel, navController, false)
+    val aViewModel = AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
+    InsertTransaction(tViewModel, aViewModel, navController, false)
 }
