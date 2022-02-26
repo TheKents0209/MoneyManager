@@ -200,11 +200,27 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
     val openDialog = remember { mutableStateOf(false) }
     var accountString by remember { mutableStateOf("") }
     val accounts = aViewModel.accounts.observeAsState()
+    var accountId by remember { mutableStateOf(0L)}
 
-    accountString = tViewModel.accountId.observeAsState().value?.let {
-        aViewModel.getAccountWithId(
-            it
-        ).observeAsState().value?.name
+    val initAccount =
+        aViewModel.originalId.value?.let { aViewModel.getAccountWithId(it).observeAsState().value }
+    if (initAccount != null) {
+        accountString = "${initAccount.name} (${initAccount.group})"
+        aViewModel.onIdChange(initAccount.id)
+        aViewModel.onGroupChange(initAccount.group)
+        aViewModel.onAmountChange(initAccount.amount)
+        aViewModel.onNameChange(initAccount.name)
+        aViewModel.onIncludeChange(initAccount.includeInTotals)
+    }
+
+    val selectedAccount = aViewModel.getAccountWithId(accountId).observeAsState().value
+    if (selectedAccount != null) {
+        accountString = "${selectedAccount.name} (${selectedAccount.group})"
+        aViewModel.onIdChange(selectedAccount.id)
+        aViewModel.onGroupChange(selectedAccount.group)
+        aViewModel.onAmountChange(selectedAccount.amount)
+        aViewModel.onNameChange(selectedAccount.name)
+        aViewModel.onIncludeChange(selectedAccount.includeInTotals)
     }
 
     ModelDialog(text = "Account") {
@@ -245,6 +261,7 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
                                 .clickable {
                                     accountString = "${account.name} (${account.group})"
                                     tViewModel.onAccountIdChange(account.id)
+                                    accountId = account.id
                                     openDialog.value = false
                                 },
                             contentAlignment = Alignment.Center,
