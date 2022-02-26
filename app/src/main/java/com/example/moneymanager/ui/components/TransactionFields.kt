@@ -27,10 +27,7 @@ import com.example.moneymanager.R
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
-import com.example.moneymanager.util.areAllRequiredFieldsFilled
-import com.example.moneymanager.util.formatLocalDateToString
-import com.example.moneymanager.util.getValidatedNumber
-import com.example.moneymanager.util.validateAmount
+import com.example.moneymanager.util.*
 import com.google.accompanist.flowlayout.FlowRow
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.header.MonthState
@@ -209,7 +206,6 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
             it
         ).observeAsState().value?.name
     }
-        ?: ""
 
     ModelDialog(text = "Account") {
         TextField(
@@ -340,12 +336,16 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
 
 @Composable
 fun AmountRow(tViewModel: TransactionViewModel) {
-    val amountValue by tViewModel.amount.observeAsState()
-    val onAmountChange : ((String) -> Unit) = { tViewModel.onAmountChange(getValidatedNumber(it)) }
+    val amountValue = tViewModel.amount.observeAsState().value
+    var amountValueString by remember { mutableStateOf(intToCurrencyString(amountValue)) }
+    val onAmountChange : ((String) -> Unit) = {
+        amountValueString = getValidatedNumber(it)
+        tViewModel.onAmountChange(currencyStringToInt(validateAmount(amountValueString)))
+    }
 
     ModelDialog(text = "Amount") {
         TextField(
-            value = amountValue.toString(),
+            value = amountValueString,
             textStyle = TextStyle(fontSize = 14.sp),
             onValueChange = onAmountChange,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -385,7 +385,6 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
                 .fillMaxWidth()
         ) {
             Button(modifier = Modifier.fillMaxWidth(), onClick = {
-                tViewModel.onAmountChange(validateAmount(tViewModel.amount.value))
                 when {
                     areAllRequiredFieldsFilled(tViewModel) -> {
                         Log.d("ImagePath", tViewModel.imagePath.value.toString())
@@ -397,7 +396,7 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
                         }
                         navController.navigate(NavigationItem.Transactions.route)
                     }
-                    tViewModel.amount.value == "0.00" -> {
+                    tViewModel.amount.value == 0 -> {
                         Toast.makeText(context, "Required fields aren't filled or value can't be 0", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
