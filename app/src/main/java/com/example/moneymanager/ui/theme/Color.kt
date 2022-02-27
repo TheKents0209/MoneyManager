@@ -14,7 +14,7 @@ val Snow = Color(0xFFFFF3F0)
 val Vermilion = Color(0xFFC54630)
 val BlueCrayola = Color(0xFF388ABC)
 val Cultured = Color(0xFFF5F5F5)
-val White = Color(0xFF0F0F0F)
+
 //Extra
 val Flame = Color(0xFFEB5E28)
 val Gold = Color(0xFFE19214)
