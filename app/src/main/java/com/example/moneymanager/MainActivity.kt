@@ -198,7 +198,7 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
                 EditTransaction(backStackEntry.arguments?.getLong("transactionId"), navController)
             }
             composable("addAccount") {
-                InsertAccount()
+                InsertAccount(navController)
             }
         }
     }

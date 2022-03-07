@@ -69,6 +69,12 @@ class AccountViewModel(private val accountRepository: AccountRepository) : Andro
             accountRepository.insertAccount(account)
         }
     }
+
+    fun insertAccount() {
+        viewModelScope.launch {
+            accountRepository.insertAccount(Account(id.value!!, group.value!!, name.value!!, amount.value!!, includeTotals.value!!))
+        }
+    }
     fun deleteAccount(account: Account) {
         viewModelScope.launch {
             accountRepository.deleteAccount(account)
