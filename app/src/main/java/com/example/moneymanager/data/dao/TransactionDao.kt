@@ -12,7 +12,7 @@ interface TransactionDao : GenericDao<Transaction> {
     @Query("SELECT * FROM transactions WHERE transactions.transactionId = :id")
     fun getTransactionWithId(id: Long): LiveData<Transaction>
 
-    @Query("SELECT * FROM transactions WHERE date LIKE :param")
+    @Query("SELECT * FROM transactions WHERE date LIKE :param ORDER BY date")
     fun getTransactionsByMonth(param: String): LiveData<List<Transaction>>
 
     @Query("SELECT * FROM transactions WHERE transactions.type = :type AND date LIKE :params")

@@ -109,7 +109,7 @@ fun TransactionScreen(navController: NavController) {
             //Every different day gets highlighted row and list of transactions for that day
             listOfIndividualDays.forEach { dateString ->
                 //val asd = tViewModel.transactionsByTypeDaily(-1, "${now.year}_${formatMonthDoubleDigits(now.monthValue.toString())}_$dateString%").observeAsState().value
-                val dayParams = "${now.year}_${formatToDoubleDigits(now.monthValue.toString())}_$dateString"
+                val dayParams = "${now.year}_${formatToDoubleDigits(now.monthValue.toString())}_${formatToDoubleDigits(dateString)}"
                 Log.d("dayParams", dayParams)
                 item {
                     //Highlighted row
@@ -122,8 +122,8 @@ fun TransactionScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.Start
                         ) {
                             Text(text = dateString, fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp))
-                            Text(text = LocalDate.parse("${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
-
+                            Log.d("nowDate", "${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}")
+                            //Text(text = LocalDate.parse("${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
                         }
                         Row(modifier = Modifier.fillMaxSize()
                             .padding(end = 6.dp),
@@ -152,7 +152,7 @@ fun TransactionScreen(navController: NavController) {
                                                 .fillMaxWidth(.25f)
                                                 .align(Alignment.CenterVertically),
                                             fontSize = 12.sp,
-                                            color = Color.Gray,
+                                            color = MaterialTheme.colors.secondaryVariant,
                                             overflow = TextOverflow.Ellipsis,
                                             maxLines = 1
                                         )
