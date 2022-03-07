@@ -3,6 +3,7 @@ package com.example.moneymanager.util
 import androidx.compose.ui.graphics.Color
 import com.example.moneymanager.data.model.Account
 import com.example.moneymanager.data.model.Transaction
+import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import java.text.NumberFormat
 import java.time.LocalDate
@@ -124,10 +125,15 @@ fun listDifferentCategorysAndAmounts(list: List<Transaction>?): Map<String, Int>
     return map.toList().sortedBy { (_, value) -> value }.asReversed().toMap()
 }
 
-fun areAllRequiredFieldsFilled(tViewModel: TransactionViewModel): Boolean {
+fun areAllRequiredTransactionFieldsFilled(tViewModel: TransactionViewModel): Boolean {
     return tViewModel.category.value != "" &&
             tViewModel.accountId.value != 0L &&
             tViewModel.amount.value != 0
+}
+
+fun areAllRequiredAccountFieldsFilled(aViewModel: AccountViewModel): Boolean {
+    return aViewModel.group.value != "" &&
+            aViewModel.name.value != ""
 }
 
 fun pickColor(index: Int) : Color {
