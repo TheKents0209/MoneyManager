@@ -3,6 +3,7 @@ package com.example.moneymanager.util
 import androidx.compose.ui.graphics.Color
 import com.example.moneymanager.data.model.Account
 import com.example.moneymanager.data.model.Transaction
+import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import java.text.NumberFormat
 import java.time.LocalDate
@@ -89,14 +90,14 @@ fun Int.length() = when (this) {
     else -> kotlin.math.log10(kotlin.math.abs(toDouble())).toInt() + 1
 }
 
-fun listDifferentDays(list: List<Transaction>?): List<String> {
-    val listOfDays = mutableListOf<String>()
+fun listDifferentDates(list: List<Transaction>?): List<String> {
+    val listOfDates = mutableListOf<String>()
     list?.forEach {
-        if(!listOfDays.contains(formatStringToDate(it.date).dayOfMonth.toString())) {
-            listOfDays += formatStringToDate(it.date).dayOfMonth.toString()
+        if(!listOfDates.contains(formatStringToDate(it.date).toString())) {
+            listOfDates += formatStringToDate(it.date).toString()
         }
     }
-    return listOfDays
+    return listOfDates
 }
 
 fun listDifferentGroups(list: List<Account>?): List<String> {
@@ -124,10 +125,15 @@ fun listDifferentCategorysAndAmounts(list: List<Transaction>?): Map<String, Int>
     return map.toList().sortedBy { (_, value) -> value }.asReversed().toMap()
 }
 
-fun areAllRequiredFieldsFilled(tViewModel: TransactionViewModel): Boolean {
+fun areAllRequiredTransactionFieldsFilled(tViewModel: TransactionViewModel): Boolean {
     return tViewModel.category.value != "" &&
             tViewModel.accountId.value != 0L &&
             tViewModel.amount.value != 0
+}
+
+fun areAllRequiredAccountFieldsFilled(aViewModel: AccountViewModel): Boolean {
+    return aViewModel.group.value != "" &&
+            aViewModel.name.value != ""
 }
 
 fun pickColor(index: Int) : Color {

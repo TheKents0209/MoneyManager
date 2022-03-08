@@ -103,6 +103,7 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
         }
     }
 }
+
 @Composable
 fun ModelDialog(text: String, content: @Composable () -> Unit) {
     Row(modifier = Modifier.padding(4.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
@@ -114,7 +115,6 @@ fun ModelDialog(text: String, content: @Composable () -> Unit) {
         }
         content()
     }
-
 }
 
 @Composable
@@ -403,7 +403,7 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
         ) {
             Button(modifier = Modifier.fillMaxWidth(), onClick = {
                 when {
-                    areAllRequiredFieldsFilled(tViewModel) -> {
+                    areAllRequiredTransactionFieldsFilled(tViewModel) -> {
                         Log.d("ImagePath", tViewModel.imagePath.value.toString())
                         Log.d("ImagePath", NavigationItem.Transactions.route)
                         if(isUpdate) {

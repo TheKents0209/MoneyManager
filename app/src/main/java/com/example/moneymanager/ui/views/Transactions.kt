@@ -31,7 +31,7 @@ import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.util.formatToDoubleDigits
 import com.example.moneymanager.util.formatStringToDate
 import com.example.moneymanager.util.intToCurrencyString
-import com.example.moneymanager.util.listDifferentDays
+import com.example.moneymanager.util.listDifferentDates
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
@@ -104,13 +104,13 @@ fun TransactionScreen(navController: NavController) {
         }
         LazyColumn(modifier = Modifier.fillMaxHeight(0.9f)) {
             //Reversed list for getting most recent transactions first
-            val listOfIndividualDays = listDifferentDays(list.value).asReversed()
+            val listOfIndividualDates = listDifferentDates(list.value).asReversed()
             //More effective way of doing this?
             //Every different day gets highlighted row and list of transactions for that day
-            listOfIndividualDays.forEach { dateString ->
+            listOfIndividualDates.forEach { dateString ->
                 //val asd = tViewModel.transactionsByTypeDaily(-1, "${now.year}_${formatMonthDoubleDigits(now.monthValue.toString())}_$dateString%").observeAsState().value
-                val dayParams = "${now.year}_${formatToDoubleDigits(now.monthValue.toString())}_$dateString"
-                Log.d("dayParams", dayParams)
+//                val dayParams = "${now.year}_${formatToDoubleDigits(now.monthValue.toString())}_${formatToDoubleDigits(dateString.)}"
+//                Log.d("dayParams", dayParams)
                 item {
                     //Highlighted row
                     Divider(thickness = 1.dp)
@@ -121,23 +121,24 @@ fun TransactionScreen(navController: NavController) {
                             .fillMaxWidth(0.5f),
                             horizontalArrangement = Arrangement.Start
                         ) {
-                            Text(text = dateString, fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp))
-                            Text(text = LocalDate.parse("${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
-
+                            Text(text = LocalDate.parse(dateString).dayOfMonth.toString(), fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp))
+                            Text(text = LocalDate.parse(dateString).dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
+//                            Log.d("nowDate", "${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}")
+                            //Text(text = LocalDate.parse("${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
                         }
                         Row(modifier = Modifier.fillMaxSize()
                             .padding(end = 6.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(1, dayParams).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.primary)
-                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(-1, dayParams).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.secondary)
+                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(1, dateString).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.primary)
+                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(-1, dateString).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.secondary)
                         }
                     }
                     Divider(thickness = 1.dp)
                     //List for each transaction that day
                     Column() {
                         list.value?.asReversed()?.forEach {
-                            if(formatStringToDate(it.date).dayOfMonth.toString() == dateString) {
+                            if(formatStringToDate(it.date).toString() == dateString) {
                                 Row(modifier = Modifier
                                     .padding(vertical = 8.dp, horizontal = 10.dp)
                                     .fillMaxWidth()
@@ -152,7 +153,7 @@ fun TransactionScreen(navController: NavController) {
                                                 .fillMaxWidth(.25f)
                                                 .align(Alignment.CenterVertically),
                                             fontSize = 12.sp,
-                                            color = Color.Gray,
+                                            color = MaterialTheme.colors.secondaryVariant,
                                             overflow = TextOverflow.Ellipsis,
                                             maxLines = 1
                                         )
