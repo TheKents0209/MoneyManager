@@ -90,14 +90,14 @@ fun Int.length() = when (this) {
     else -> kotlin.math.log10(kotlin.math.abs(toDouble())).toInt() + 1
 }
 
-fun listDifferentDays(list: List<Transaction>?): List<String> {
-    val listOfDays = mutableListOf<String>()
+fun listDifferentDates(list: List<Transaction>?): List<String> {
+    val listOfDates = mutableListOf<String>()
     list?.forEach {
-        if(!listOfDays.contains(formatStringToDate(it.date).dayOfMonth.toString())) {
-            listOfDays += formatStringToDate(it.date).dayOfMonth.toString()
+        if(!listOfDates.contains(formatStringToDate(it.date).toString())) {
+            listOfDates += formatStringToDate(it.date).toString()
         }
     }
-    return listOfDays
+    return listOfDates
 }
 
 fun listDifferentGroups(list: List<Account>?): List<String> {
