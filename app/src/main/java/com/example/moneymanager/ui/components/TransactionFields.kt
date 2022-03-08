@@ -241,7 +241,7 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
             text = {
                 FlowRow(modifier = Modifier.fillMaxWidth()) {
                     accounts.value?.forEach { account ->
-                        Box(
+                        Box( // account here
                             modifier = Modifier
                                 .size(128.dp)
                                 .background(Color.Blue)

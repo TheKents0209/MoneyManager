@@ -82,11 +82,11 @@ fun TransactionScreen(navController: NavController) {
                 )
             }
         }
-        Divider(thickness = 1.dp)
+        Divider(thickness = 2.dp)
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(6.dp)
+                .padding(10.dp)
             , horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -152,7 +152,7 @@ fun TransactionScreen(navController: NavController) {
                                                 .fillMaxWidth(.25f)
                                                 .align(Alignment.CenterVertically),
                                             fontSize = 12.sp,
-                                            color = Color.Gray,
+                                            color = MaterialTheme.colors.secondaryVariant,
                                             overflow = TextOverflow.Ellipsis,
                                             maxLines = 1
                                         )
@@ -162,7 +162,7 @@ fun TransactionScreen(navController: NavController) {
                                                 .padding(start = 16.dp)
                                             ,
                                             fontSize = 14.sp,
-                                            color = Color.Gray,
+                                            color = MaterialTheme.colors.secondaryVariant,
                                             overflow = TextOverflow.Ellipsis,
                                             maxLines = 1
                                         )

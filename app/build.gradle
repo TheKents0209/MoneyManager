@@ -55,6 +55,7 @@ dependencies {
     // Required dependencies
     implementation 'com.google.android.material:material:<latest-version>'
     implementation 'androidx.preference:preference-ktx:<latest-version>'
+
     //Charts
     implementation 'com.github.tehras:charts:master-SNAPSHOT'
 

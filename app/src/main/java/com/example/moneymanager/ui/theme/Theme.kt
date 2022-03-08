@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
     primary = BlueCrayola,
@@ -16,10 +17,10 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    primary = BlueCrayola,
+    primary = BlueCrayola, // blue money colour
     primaryVariant = Gold,
-    secondary = Vermilion,
-    secondaryVariant = Gray,
+    secondary = Vermilion, // red money colour
+    secondaryVariant = RichBlack, // Text colour
     background = Cultured,
     onBackground = RichBlack,
 
