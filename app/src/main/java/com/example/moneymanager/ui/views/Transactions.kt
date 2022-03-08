@@ -86,7 +86,7 @@ fun TransactionScreen(navController: NavController) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(15.dp)
             , horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

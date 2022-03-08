@@ -11,7 +11,8 @@ private val DarkColorPalette = darkColors(
     primary = BlueCrayola,
     primaryVariant = Gold,
     secondary = Vermilion,
-    secondaryVariant = Gray,
+    // secondaryVariant = Gray,
+    secondaryVariant = Snow,
     background = RichBlack,
     onBackground = Snow,
 )
