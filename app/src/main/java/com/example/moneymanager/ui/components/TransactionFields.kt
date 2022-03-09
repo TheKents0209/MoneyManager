@@ -66,7 +66,7 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
             ) {
                 Text(
                     text = optionText,
-                    color = MaterialTheme.colors.onBackground,
+                    color = Color.White,
                     modifier = Modifier
                         .clip(
                             shape = RoundedCornerShape(
@@ -91,7 +91,7 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
                                 MaterialTheme.colors.secondary
                             } else {
                                 //Gray
-                                MaterialTheme.colors.secondaryVariant
+                                MaterialTheme.colors.primaryVariant
                             }
                         )
                         .padding(
@@ -266,7 +266,7 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
                                 },
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(account.toString())
+                            Text(account.name)
                         }
                     }
                 }
@@ -421,7 +421,7 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
                     }
                 }
             }) {
-                Text(text = "Save")
+                Text(text = "Save", color = Color.White)
             }
         }
         if(isUpdate) {

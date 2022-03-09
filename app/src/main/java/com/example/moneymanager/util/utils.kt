@@ -137,15 +137,18 @@ fun areAllRequiredAccountFieldsFilled(aViewModel: AccountViewModel): Boolean {
 }
 
 fun pickColor(index: Int) : Color {
-    //TODO: Generate color scale that's visibly different enough
     val colors = mutableListOf(
         Color(0XFFFF4744),
-        Color(0XFFFF7F44),
+        Color(0XFFFF9044),
         Color(0XFFFFB744),
-        Color(0XFFFFEF44),
-        Color(0XFFD7FF44),
-        Color(0XFF9FFF44),
-        Color(0XFF66FF44),
+        Color(0XFFFFF448),
+        Color(0XFF33ff0b),
+        Color(0XFF00FFFF),
+        Color(0XFF0000FF),
+        Color(0XFF00008b),
+        Color(0XFF800080),
+        Color(0XFFFFC0CB),
+        Color(0XFFFF00FF),
         Color(0XFF44FF92),
         Color(0XFF44FCFF),
         Color(0XFFFF5722),
