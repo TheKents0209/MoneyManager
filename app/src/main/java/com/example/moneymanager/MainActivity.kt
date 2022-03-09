@@ -53,8 +53,9 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
         if (firstLaunch) {
             val accountViewModel = AccountViewModel(AccountRepository(DB.getInstance(application).AccountDao()))
 
-            accountViewModel.insertAccount(Account(0, "Bank", "Nordea", 10000, true))
-            accountViewModel.insertAccount(Account(0, "Bank", "S-pankki", 10000, true))
+            //Creating basic accounts so user doesn't need to add them themselves "QOL"
+            accountViewModel.insertAccount(Account(0, "Cash", "Cash", 0, true))
+            accountViewModel.insertAccount(Account(0, "Bank", "Bank", 0, true))
 
             val prefPut = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
             val prefEditor = prefPut.edit()
@@ -92,29 +93,30 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
         }
         Scaffold(
             topBar = {
-                if (currentRouteDestination == "addTransaction") {
-                    TopAppBar(
-                        title = { Text(text = "Transaction") },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                navController.navigateUp()
-                            }) {
-                                Icon(
-                                    painterResource(R.drawable.ic_twotone_chevron_left_24),
-                                    contentDescription = "Previous month"
-                                )
-                            }
-                        },
-                        backgroundColor = MaterialTheme.colors.background
-                    )
+                if (currentRouteDestination != null) {
+                    if (currentRouteDestination == "addTransaction" || currentRouteDestination.startsWith("editTransaction")) {
+                        TopAppBar(
+                            title = { Text(text = "Transaction") },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    navController.navigateUp()
+                                }) {
+                                    Icon(
+                                        painterResource(R.drawable.ic_twotone_chevron_left_24),
+                                        contentDescription = "Previous month"
+                                    )
+                                }
+                            },
+                            backgroundColor = MaterialTheme.colors.background
+                        )
+                    }
                 }
             },
             bottomBar = {
-                if (currentRouteDestination != "addTransaction") {
-                    BottomNavigationBar(navController)
-                }
-                if (currentRouteDestination == "addTransaction") {
-                    InsertTransaction(navController)
+                if (currentRouteDestination != null) {
+                    if (currentRouteDestination != "addTransaction" && !currentRouteDestination.startsWith("editTransaction") && currentRouteDestination != "addAccount") {
+                        BottomNavigationBar(navController)
+                    }
                 }
             },
             floatingActionButton = {
@@ -184,7 +186,7 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
                 StatsScreen()
             }
             composable(NavigationItem.Accounts.route) {
-                AccountsScreen()
+                AccountsScreen(navController)
             }
             composable(NavigationItem.Settings.route) {
                 SettingsScreen()
@@ -194,6 +196,9 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
             }
             composable("editTransaction/{transactionId}", arguments = listOf(navArgument("transactionId") { type = NavType.LongType })) { backStackEntry ->
                 EditTransaction(backStackEntry.arguments?.getLong("transactionId"), navController)
+            }
+            composable("addAccount") {
+                InsertAccount(navController)
             }
         }
     }

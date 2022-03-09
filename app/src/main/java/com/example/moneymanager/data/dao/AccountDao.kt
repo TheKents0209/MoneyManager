@@ -11,4 +11,7 @@ interface AccountDao : GenericDao<Account> {
 
     @Query("SELECT * FROM accounts WHERE accounts.id = :id")
     fun getAccountWithId(id: Long): LiveData<Account>
+
+    @Query("SELECT ((SELECT SUM(amount) FROM accounts WHERE id = :id)+COALESCE( (SELECT SUM(amount) FROM transactions WHERE transactions.type = 1 AND accountId = :id), 0) - COALESCE( (SELECT SUM(amount) FROM transactions WHERE transactions.type = -1 AND accountId = :id), 0))")
+    fun getAccountAmount(id: Long): LiveData<Int>
 }
