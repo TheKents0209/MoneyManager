@@ -253,10 +253,10 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
             text = {
                 FlowRow(modifier = Modifier.fillMaxWidth()) {
                     accounts.value?.forEach { account ->
-                        Box( // account here
+                        Box(
                             modifier = Modifier
                                 .size(128.dp)
-                                .background(Color.Blue) // account väri
+                                .background(Color.Blue)
                                 .border(2.dp, Color.DarkGray)
                                 .clickable {
                                     accountString = "${account.name} (${account.group})"
@@ -266,7 +266,7 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
                                 },
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(account.name.toString())
+                            Text(account.name)
                         }
                     }
                 }

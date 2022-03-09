@@ -17,13 +17,12 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    primary = BlueCrayola, // blue money colour
+    primary = BlueCrayola,
     primaryVariant = Gray,
-    secondary = Vermilion, // red money colour
-    secondaryVariant = RichBlack, // Text colour
+    secondary = Vermilion,
+    secondaryVariant = RichBlack,
     background = Cultured,
     onBackground = RichBlack,
-
 
     /* Other default colors to override
     background = Color.White,
