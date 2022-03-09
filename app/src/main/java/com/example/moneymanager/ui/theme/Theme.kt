@@ -9,9 +9,8 @@ import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
     primary = BlueCrayola,
-    primaryVariant = Gold,
+    primaryVariant = Gray,
     secondary = Vermilion,
-    // secondaryVariant = Gray,
     secondaryVariant = Snow,
     background = RichBlack,
     onBackground = Snow,
@@ -19,11 +18,12 @@ private val DarkColorPalette = darkColors(
 
 private val LightColorPalette = lightColors(
     primary = BlueCrayola, // blue money colour
-    primaryVariant = Gold,
+    primaryVariant = Gray,
     secondary = Vermilion, // red money colour
     secondaryVariant = RichBlack, // Text colour
     background = Cultured,
     onBackground = RichBlack,
+
 
     /* Other default colors to override
     background = Color.White,

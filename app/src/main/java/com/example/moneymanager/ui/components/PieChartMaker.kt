@@ -2,12 +2,10 @@ package com.example.moneymanager.ui.components
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Divider
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -91,7 +89,12 @@ fun Tabs(tViewModel: TransactionViewModel , localDate: LocalDate) {
     Column() {
         TabRow(selectedTabIndex = tabIndex) {
             tabTitles.forEachIndexed { index, title ->
-                Tab(selected = tabIndex == index, onClick = { tabIndex = index }, text = { Text(text = title)})
+                Tab(selected = tabIndex == index, modifier =
+                Modifier.background(MaterialTheme.colors.background),
+                    onClick = { tabIndex = index },
+                    text = { Text(text = title)},
+                    unselectedContentColor = MaterialTheme.colors.primaryVariant,
+                    selectedContentColor = MaterialTheme.colors.onBackground)
             }
         }
         when (tabIndex) {
