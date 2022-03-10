@@ -38,22 +38,23 @@ import java.util.*
 
 @Composable
 fun TransactionScreen(navController: NavController) {
-    val tViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
-    val aViewModel = AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
+    val tViewModel = TransactionViewModel(
+        TransactionRepository(
+            DB.getInstance(LocalContext.current).TransactionDao()
+        )
+    )
+    val aViewModel =
+        AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
 
-    var now by rememberSaveable { mutableStateOf(LocalDate.now())}
+    var now by rememberSaveable { mutableStateOf(LocalDate.now()) }
     val params = "${now.year}_${formatToDoubleDigits(now.monthValue.toString())}%"
 
     val income = tViewModel.transactionsSumByTypeAndMonth(1, params).observeAsState()
     val expense = tViewModel.transactionsSumByTypeAndMonth(-1, params).observeAsState()
     val total = tViewModel.transactionsTotalMonthly(params).observeAsState()
 
-    Log.d("params", params)
-    //val params = "2022_02%"
-
     val list = tViewModel.transactionsMonthly(params).observeAsState()
 
-    //TODO: Chevrons to edges
     Column(Modifier.fillMaxSize()) {
         Row(
             Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
@@ -61,24 +62,35 @@ fun TransactionScreen(navController: NavController) {
             IconButton(onClick = {
                 now = now.minusMonths(1)
             }) {
-                Icon(painterResource(R.drawable.ic_twotone_chevron_left_24), contentDescription = "Previous month", modifier =
-                Modifier
-                    .align(Alignment.CenterVertically)
+                Icon(
+                    painterResource(R.drawable.ic_twotone_chevron_left_24),
+                    contentDescription = "Previous month",
+                    modifier =
+                    Modifier
+                        .align(Alignment.CenterVertically)
                 )
             }
 
-            Text(text = "${now.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())} ${now.year}",
+            Text(
+                text = "${
+                    now.month.getDisplayName(
+                        TextStyle.SHORT,
+                        Locale.getDefault()
+                    )
+                } ${now.year}",
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
 
             IconButton(onClick = {
                 now = now.plusMonths(1)
-                Log.d("MONTH", now.toString())
             }) {
-                Icon(painterResource(R.drawable.ic_twotone_chevron_right_24), contentDescription = "Next month" , modifier =
-                Modifier
-                    .align(Alignment.CenterVertically)
+                Icon(
+                    painterResource(R.drawable.ic_twotone_chevron_right_24),
+                    contentDescription = "Next month",
+                    modifier =
+                    Modifier
+                        .align(Alignment.CenterVertically)
                 )
             }
         }
@@ -86,16 +98,23 @@ fun TransactionScreen(navController: NavController) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(15.dp)
-            , horizontalArrangement = Arrangement.SpaceEvenly
+                .padding(15.dp), horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = stringResource(R.string.income), fontSize = 12.sp)
-                Text(text = intToCurrencyString(income.value), fontSize = 14.sp, color = MaterialTheme.colors.primary)
+                Text(
+                    text = intToCurrencyString(income.value),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colors.primary
+                )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = stringResource(R.string.expenses), fontSize = 12.sp)
-                Text(text = intToCurrencyString(expense.value), fontSize = 14.sp, color = MaterialTheme.colors.secondary)
+                Text(
+                    text = intToCurrencyString(expense.value),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colors.secondary
+                )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = stringResource(R.string.total), fontSize = 12.sp)
@@ -108,37 +127,64 @@ fun TransactionScreen(navController: NavController) {
             //More effective way of doing this?
             //Every different day gets highlighted row and list of transactions for that day
             listOfIndividualDates.forEach { dateString ->
-                //val asd = tViewModel.transactionsByTypeDaily(-1, "${now.year}_${formatMonthDoubleDigits(now.monthValue.toString())}_$dateString%").observeAsState().value
-//                val dayParams = "${now.year}_${formatToDoubleDigits(now.monthValue.toString())}_${formatToDoubleDigits(dateString.)}"
-//                Log.d("dayParams", dayParams)
                 item {
                     //Highlighted row
                     Divider(thickness = 1.dp)
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        Row(modifier = Modifier
-                            //start + text(4.dp)
-                            .padding(start = 6.dp)
-                            .fillMaxWidth(0.5f),
+                        Row(
+                            modifier = Modifier
+                                //start + text(4.dp)
+                                .padding(start = 6.dp)
+                                .fillMaxWidth(0.5f),
                             horizontalArrangement = Arrangement.Start
                         ) {
-                            Text(text = LocalDate.parse(dateString).dayOfMonth.toString(), fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp))
-                            Text(text = LocalDate.parse(dateString).dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
-//                            Log.d("nowDate", "${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}")
-                            //Text(text = LocalDate.parse("${now.year}-${formatToDoubleDigits(now.monthValue.toString())}-${formatToDoubleDigits(dateString)}").dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp))
+                            Text(
+                                text = LocalDate.parse(dateString).dayOfMonth.toString(),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(4.dp)
+                            )
+                            Text(
+                                text = LocalDate.parse(dateString).dayOfWeek.getDisplayName(
+                                    TextStyle.SHORT,
+                                    Locale.getDefault()
+                                ).toString(), modifier = Modifier.padding(top = 4.dp, start = 2.dp)
+                            )
                         }
-                        Row(modifier = Modifier.fillMaxSize()
-                            .padding(end = 6.dp),
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(end = 6.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(1, dateString).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.primary)
-                            Text(text = intToCurrencyString(tViewModel.transactionsByTypeDaily(-1, dateString).observeAsState().value), modifier = Modifier.padding(4.dp), fontSize = 14.sp, color = MaterialTheme.colors.secondary)
+                            Text(
+                                text = intToCurrencyString(
+                                    tViewModel.transactionsByTypeDaily(
+                                        1,
+                                        dateString
+                                    ).observeAsState().value
+                                ),
+                                modifier = Modifier.padding(4.dp),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colors.primary
+                            )
+                            Text(
+                                text = intToCurrencyString(
+                                    tViewModel.transactionsByTypeDaily(
+                                        -1,
+                                        dateString
+                                    ).observeAsState().value
+                                ),
+                                modifier = Modifier.padding(4.dp),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colors.secondary
+                            )
                         }
                     }
                     Divider(thickness = 1.dp)
                     //List for each transaction that day
                     Column() {
                         list.value?.asReversed()?.forEach {
-                            if(formatStringToDate(it.date).toString() == dateString) {
+                            if (formatStringToDate(it.date).toString() == dateString) {
                                 Row(modifier = Modifier
                                     .padding(vertical = 8.dp, horizontal = 10.dp)
                                     .fillMaxWidth()
@@ -148,7 +194,8 @@ fun TransactionScreen(navController: NavController) {
                                     }
                                 ) {
                                     Row(modifier = Modifier.fillMaxWidth(0.7f)) {
-                                        Text(text = it.category, // category
+                                        Text(
+                                            text = it.category,
                                             modifier = Modifier
                                                 .fillMaxWidth(.25f)
                                                 .align(Alignment.CenterVertically),
@@ -157,24 +204,29 @@ fun TransactionScreen(navController: NavController) {
                                             overflow = TextOverflow.Ellipsis,
                                             maxLines = 1
                                         )
-                                        Text(text = aViewModel.getAccountWithId(it.accountId).observeAsState().value?.name ?: "", // account
+                                        Text(
+                                            text = aViewModel.getAccountWithId(it.accountId)
+                                                .observeAsState().value?.name ?: "",
                                             modifier = Modifier
                                                 .align(Alignment.CenterVertically)
-                                                .padding(start = 16.dp)
-                                            ,
+                                                .padding(start = 16.dp),
                                             fontSize = 14.sp,
                                             color = MaterialTheme.colors.secondaryVariant,
                                             overflow = TextOverflow.Ellipsis,
                                             maxLines = 1
                                         )
                                     }
-                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                        Text(text = intToCurrencyString(it.amount), color = // sininen ja punainen amount, ei tarvitse vaihtaa
-                                        (if (it.type == 1) {
-                                            MaterialTheme.colors.primary
-                                        }else {
-                                            MaterialTheme.colors.secondary
-                                        }),
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        Text(
+                                            text = intToCurrencyString(it.amount), color =
+                                            (if (it.type == 1) {
+                                                MaterialTheme.colors.primary
+                                            } else {
+                                                MaterialTheme.colors.secondary
+                                            }),
                                             modifier = Modifier
                                                 .align(Alignment.CenterVertically),
                                             fontSize = 16.sp

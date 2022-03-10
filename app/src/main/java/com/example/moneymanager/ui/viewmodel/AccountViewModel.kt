@@ -9,7 +9,8 @@ import com.example.moneymanager.data.model.Account
 import com.example.moneymanager.data.repository.AccountRepository
 import kotlinx.coroutines.launch
 
-class AccountViewModel(private val accountRepository: AccountRepository) : AndroidViewModel(Application()) {
+class AccountViewModel(private val accountRepository: AccountRepository) :
+    AndroidViewModel(Application()) {
     private val _id = MutableLiveData(0L)
     val id: LiveData<Long> = _id
 
@@ -72,9 +73,18 @@ class AccountViewModel(private val accountRepository: AccountRepository) : Andro
 
     fun insertAccount() {
         viewModelScope.launch {
-            accountRepository.insertAccount(Account(id.value!!, group.value!!, name.value!!, amount.value!!, includeTotals.value!!))
+            accountRepository.insertAccount(
+                Account(
+                    id.value!!,
+                    group.value!!,
+                    name.value!!,
+                    amount.value!!,
+                    includeTotals.value!!
+                )
+            )
         }
     }
+
     fun deleteAccount(account: Account) {
         viewModelScope.launch {
             accountRepository.deleteAccount(account)

@@ -1,10 +1,13 @@
 package com.example.moneymanager.ui.components
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -13,30 +16,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.moneymanager.R
 import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.util.*
-import com.google.accompanist.flowlayout.FlowRow
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GroupAlertDialog(aViewModel: AccountViewModel) {
     val openDialog = remember { mutableStateOf(false) }
     var groupString by remember { mutableStateOf("") }
-    //Groups are static atm, in the future user can add their own
-    val groups = listOf("Cash", "Bank", "Card", "Savings", "Investments")
+    val groups = listOf(stringResource(R.string.cash), stringResource(R.string.bank), stringResource(R.string.card), stringResource(R.string.savings), stringResource(R.string.investments))
 
     groupString = aViewModel.group.observeAsState().value ?: ""
 
-    ModelDialog(text = "Group") {
+    ModelDialog(stringResource(R.string.group)) {
         TextField(
             value = groupString,
             textStyle = TextStyle(fontSize = 14.sp),
-            onValueChange = { groupString = it},
+            onValueChange = { groupString = it },
             enabled = false,
             modifier = Modifier
                 .fillMaxWidth()
@@ -51,30 +55,30 @@ fun GroupAlertDialog(aViewModel: AccountViewModel) {
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = {
-                // Dismiss the dialog when the user clicks outside the dialog or on the back
-                // button. If you want to disable that functionality, simply use an empty
-                // onCloseRequest.
+                // Dismiss the dialog when the user clicks outside the dialog or on the back button.
                 openDialog.value = false
             },
             title = {
-                Text(text = "Select account")
+                Text(stringResource(R.string.select_account))
             },
             text = {
-                FlowRow(modifier = Modifier.fillMaxWidth()) {
+                LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxWidth()) {
                     groups.forEach { group ->
-                        Box(
-                            modifier = Modifier
-                                .size(128.dp)
-                                .background(Color.Blue)
-                                .border(2.dp, Color.DarkGray)
-                                .clickable {
-                                    groupString = group
-                                    aViewModel.onGroupChange(groupString)
-                                    openDialog.value = false
-                                },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(group)
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .size(128.dp)
+                                    .background(Color.Blue)
+                                    .border(2.dp, Color.DarkGray)
+                                    .clickable {
+                                        groupString = group
+                                        aViewModel.onGroupChange(groupString)
+                                        openDialog.value = false
+                                    },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(group)
+                            }
                         }
                     }
                 }
@@ -84,7 +88,7 @@ fun GroupAlertDialog(aViewModel: AccountViewModel) {
                     onClick = {
                         openDialog.value = false
                     }) {
-                    Text("Confirm")
+                    Text(stringResource(R.string.confirm))
                 }
             }
         )
@@ -96,7 +100,7 @@ fun NameAlertDialog(aViewModel: AccountViewModel) {
     val nameValue by aViewModel.name.observeAsState()
     val onNameChange : ((String) -> Unit) = { aViewModel.onNameChange(it) }
 
-    ModelDialog(text = "Name") {
+    ModelDialog(stringResource(R.string.name)) {
         TextField(
             value = nameValue.toString(),
             textStyle = TextStyle(fontSize = 14.sp),
@@ -118,7 +122,7 @@ fun AmountRow(aViewModel: AccountViewModel) {
         aViewModel.onAmountChange(currencyStringToInt(validateAmount(amountValueString)))
     }
 
-    ModelDialog(text = "Amount") {
+    ModelDialog(stringResource(R.string.amount)) {
         TextField(
             value = amountValueString,
             textStyle = TextStyle(fontSize = 14.sp),
@@ -135,7 +139,7 @@ fun AmountRow(aViewModel: AccountViewModel) {
 @Composable
 fun InsertAccountButton(aViewModel: AccountViewModel, navController: NavController) {
     val context = LocalContext.current
-    Column() {
+    Column {
         Row(
             Modifier
                 .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -148,11 +152,11 @@ fun InsertAccountButton(aViewModel: AccountViewModel, navController: NavControll
                         navController.navigate(NavigationItem.Accounts.route)
                     }
                     else -> {
-                        Toast.makeText(context, "Required fields aren't filled", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.required_fields_failed, Toast.LENGTH_SHORT).show()
                     }
                 }
             }) {
-                Text(text = "Save")
+                Text(stringResource(R.string.save))
             }
         }
     }
