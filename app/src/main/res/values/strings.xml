@@ -3,4 +3,62 @@
     <string name="income">Income</string>
     <string name="expenses">Expenses</string>
     <string name="total">Total</string>
+    <string name="accounts">Accounts</string>
+    <string name="category">Category</string>
+    <string name="amount">Amount</string>
+    <string name="note">Note</string>
+    <string name="save">Save</string>
+    <string name="date">Date</string>
+    <string name="delete">Delete</string>
+    <string name="name">Name</string>
+
+    <plurals name="account">
+        <item quantity="one">Account</item>
+        <item quantity="many">Accounts</item>
+    </plurals>
+    <plurals name="transaction">
+        <item quantity="one">Transaction</item>
+        <item quantity="many">Transactions</item>
+    </plurals>
+
+    <string name="stats">Stats</string>
+    <string name="group">Group</string>
+    <string name="select_date">Select date</string>
+    <string name="select_account">Select account</string>
+    <string name="select_category">Select category</string>
+
+    <string name="cash">Cash</string>
+    <string name="bank">Bank</string>
+    <string name="card">Card</string>
+    <string name="savings">Savings</string>
+    <string name="investments">Investments</string>
+
+    <string name="food">Food</string>
+    <string name="social_life">Social Life</string>
+    <string name="self_development">Self-development</string>
+    <string name="transportation">Transportation</string>
+    <string name="culture">Culture</string>
+    <string name="household">Household</string>
+    <string name="apparel">Apparel</string>
+    <string name="beauty">Beauty</string>
+    <string name="health">Health</string>
+    <string name="education">Education</string>
+    <string name="gift">Gift</string>
+    <string name="other">Other</string>
+
+    <string name="allowance">Allowance</string>
+    <string name="salary">Salary</string>
+    <string name="petty_cash">Petty cash</string>
+    <string name="bonus">Bonus</string>
+
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="no_data">No data</string>
+
+    <string name="required_fields_failed_value">Required fields aren\'t filled or value can\'t be 0</string>
+    <string name="required_fields_failed">Required fields aren\'t filled</string>
+
+    <string name="take_picture">Take picture</string>
+    <string name="choose_gallery">Choose from gallery</string>
 </resources>

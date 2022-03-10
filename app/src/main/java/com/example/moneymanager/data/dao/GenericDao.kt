@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
 
-interface GenericDao <T> {
+interface GenericDao<T> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: T)
 

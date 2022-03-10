@@ -31,15 +31,15 @@ import com.example.moneymanager.ui.NavigationItem
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 import com.example.moneymanager.util.*
-import com.google.accompanist.flowlayout.FlowRow
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.header.MonthState
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
 import io.github.boguszpawlowski.composecalendar.selection.SelectionMode
 import java.time.LocalDate
+import java.util.*
 
 @Composable
-fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
+fun TransactionTypeSelector(tViewModel: TransactionViewModel) {
     val options = listOf(
         stringResource(id = R.string.income),
         stringResource(id = R.string.expenses)
@@ -48,7 +48,7 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
     val incomeString = stringResource(id = R.string.income)
     var selectedOption by remember { mutableStateOf(expenseString) }
     val currentValue = tViewModel.type.observeAsState().value
-    if(currentValue == 1) {
+    if (currentValue == 1) {
         selectedOption = incomeString
     }
 
@@ -109,9 +109,14 @@ fun TransactionTypeSelector(tViewModel:TransactionViewModel) {
 
 @Composable
 fun ModelDialog(text: String, content: @Composable () -> Unit) {
-    Row(modifier = Modifier.padding(4.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.padding(4.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(Modifier.fillMaxWidth(0.22f)) {
-            Text(text = text,
+            Text(
+                text = text,
                 Modifier.padding(start = 4.dp, end = 8.dp),
                 softWrap = false
             )
@@ -121,18 +126,20 @@ fun ModelDialog(text: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-fun DateAlertDialog(tViewModel:TransactionViewModel) {
+fun DateAlertDialog(tViewModel: TransactionViewModel) {
     val openDialog = remember { mutableStateOf(false) }
-    Log.d("asdasd", LocalDate.parse(tViewModel.date.observeAsState().value).toString())
-    val calendarState = rememberSelectableCalendarState(initialSelection = listOf(LocalDate.parse(tViewModel.date.observeAsState().value)), initialSelectionMode = SelectionMode.Single)
+    val calendarState = rememberSelectableCalendarState(
+        initialSelection = listOf(LocalDate.parse(tViewModel.date.observeAsState().value)),
+        initialSelectionMode = SelectionMode.Single
+    )
     var dateString by remember { mutableStateOf(formatLocalDateToString(LocalDate.now())) }
 
     dateString = formatLocalDateToString(LocalDate.parse(tViewModel.date.observeAsState().value))
-    ModelDialog(text = "Date") {
+    ModelDialog(stringResource(R.string.date)) {
         TextField(
             value = dateString,
             textStyle = TextStyle(fontSize = 14.sp),
-            onValueChange = { dateString = it},
+            onValueChange = { dateString = it },
             enabled = false,
             modifier = Modifier
                 .fillMaxWidth()
@@ -140,15 +147,13 @@ fun DateAlertDialog(tViewModel:TransactionViewModel) {
                 .clickable { openDialog.value = true },
             colors = TextFieldDefaults.textFieldColors(
                 disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                disabledLabelColor =  MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+                disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
             )
         )
     }
 
     if (openDialog.value) {
-        var selectedDate by remember { mutableStateOf(LocalDate.parse(tViewModel.date.value))}
-        Log.d("selectedDate", selectedDate.toString())
-       // var selectedDate: LocalDate = LocalDate.parse(tViewModel.date.observeAsState().value)
+        var selectedDate by remember { mutableStateOf(LocalDate.parse(tViewModel.date.value)) }
         AlertDialog(
             onDismissRequest = {
                 // Dismiss the dialog when the user clicks outside the dialog or on the back
@@ -158,14 +163,14 @@ fun DateAlertDialog(tViewModel:TransactionViewModel) {
                 tViewModel.onDateChange(selectedDate.toString())
             },
             title = {
-                Text(text = "Select date")
+                Text(stringResource(R.string.select_date))
             },
             text = {
-                SelectableCalendar(calendarState = calendarState,
-                    monthHeader = { monthState ->  MyMonthHeader(monthState = monthState) },
+                SelectableCalendar(
+                    calendarState = calendarState,
+                    monthHeader = { monthState -> MyMonthHeader(monthState = monthState) }
                 )
-                Log.d("DATE", calendarState.selectionState.selection.toString())
-                if(calendarState.selectionState.selection.isNotEmpty()) {
+                if (calendarState.selectionState.selection.isNotEmpty()) {
                     selectedDate = calendarState.selectionState.selection[0]
                 }
                 dateString = formatLocalDateToString(selectedDate)
@@ -174,37 +179,44 @@ fun DateAlertDialog(tViewModel:TransactionViewModel) {
                 Button(
                     onClick = {
                         openDialog.value = false
-                        Log.d("DBG bf", selectedDate.toString())
                         tViewModel.onDateChange(selectedDate.toString())
                     }) {
-                    Text("Confirm")
+                    Text(stringResource(R.string.confirm))
                 }
             }
         )
     }
 }
 
-//TODO: Make chevrons stay put
 @Composable
 fun MyMonthHeader(monthState: MonthState) {
     Row(Modifier.fillMaxWidth(), Arrangement.Center) {
         IconButton(onClick = { monthState.currentMonth = monthState.currentMonth.minusMonths(1) }) {
-            Icon(painterResource(R.drawable.ic_twotone_chevron_left_24), contentDescription = "Previous month")
+            Icon(
+                painterResource(R.drawable.ic_twotone_chevron_left_24),
+                contentDescription = "Previous month"
+            )
         }
-        Text("${monthState.currentMonth.month.name} ${monthState.currentMonth.year}")
+        Text("${monthState.currentMonth.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())} ${monthState.currentMonth.year}", Modifier.align(
+            Alignment.CenterVertically))
         IconButton(onClick = { monthState.currentMonth = monthState.currentMonth.plusMonths(1) }) {
-            Icon(painterResource(R.drawable.ic_twotone_chevron_right_24), contentDescription = "Next month")
+            Icon(
+                painterResource(R.drawable.ic_twotone_chevron_right_24),
+                contentDescription = "Next month"
+            )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountViewModel) {
     val openDialog = remember { mutableStateOf(false) }
     var accountString by remember { mutableStateOf("") }
     val accounts = aViewModel.accounts.observeAsState()
-    var accountId by remember { mutableStateOf(0L)}
+    var accountId by remember { mutableStateOf(0L) }
 
+    //If transaction is edited, fills last account automatically
     val initAccount =
         aViewModel.originalId.value?.let { aViewModel.getAccountWithId(it).observeAsState().value }
     if (initAccount != null) {
@@ -226,11 +238,11 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
         aViewModel.onIncludeChange(selectedAccount.includeInTotals)
     }
 
-    ModelDialog(text = "Account") {
+    ModelDialog(LocalContext.current.resources.getQuantityString(R.plurals.account, 1)) {
         TextField(
             value = accountString,
             textStyle = TextStyle(fontSize = 14.sp),
-            onValueChange = { accountString = it},
+            onValueChange = { accountString = it },
             enabled = false,
             modifier = Modifier
                 .fillMaxWidth()
@@ -238,7 +250,7 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
                 .clickable { openDialog.value = true },
             colors = TextFieldDefaults.textFieldColors(
                 disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                disabledLabelColor =  MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+                disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
             )
         )
     }
@@ -251,25 +263,30 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
                 openDialog.value = false
             },
             title = {
-                Text(text = "Select account")
+                Text(stringResource(R.string.select_account))
             },
             text = {
-                FlowRow(modifier = Modifier.fillMaxWidth()) {
+                LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxWidth()) {
                     accounts.value?.forEach { account ->
-                        Box(
-                            modifier = Modifier
-                                .size(128.dp)
-                                .background(MaterialTheme.colors.primaryVariant)
-                                .border(2.dp, MaterialTheme.colors.background)
-                                .clickable {
-                                    accountString = "${account.name} (${account.group})"
-                                    tViewModel.onAccountIdChange(account.id)
-                                    accountId = account.id
-                                    openDialog.value = false
-                                },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(account.name)
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5f)
+                                    .background(MaterialTheme.colors.primaryVariant)
+                                    .border(2.dp, MaterialTheme.colors.background)
+                                    .clickable {
+                                        accountString = "${account.name} (${account.group})"
+                                        tViewModel.onAccountIdChange(account.id)
+                                        accountId = account.id
+                                        openDialog.value = false
+                                    },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    account.name,
+                                    modifier = Modifier.padding(vertical = 15.dp, horizontal = 5.dp), color = Color.White
+                                )
+                            }
                         }
                     }
                 }
@@ -279,7 +296,7 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
                     onClick = {
                         openDialog.value = false
                     }) {
-                    Text("Confirm")
+                    Text(stringResource(R.string.confirm), color = Color.White)
                 }
             }
         )
@@ -291,21 +308,39 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
 fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
     val openDialog = remember { mutableStateOf(false) }
     var categoryString by remember { mutableStateOf("") }
-    //Categorys are static atm, in the future user can add their own
+    //Categories are static atm, in the future user can add their own
     val categories: List<String> = if (tViewModel.type.observeAsState().value == 1) {
-        listOf("Allowance","Salary","Petty cash","Bonus","Other")
+        listOf(
+            stringResource(R.string.allowance),
+            stringResource(R.string.salary),
+            stringResource(R.string.petty_cash),
+            stringResource(R.string.bonus),
+            stringResource(R.string.other)
+        )
     } else {
-        listOf("Food", "Social Life", "Self-development", "Transportation", "Culture", "Household", "Apparel", "Beauty", "Health", "Education", "Gift","Other")
+        listOf(
+            stringResource(R.string.food),
+            stringResource(R.string.social_life),
+            stringResource(R.string.self_development),
+            stringResource(R.string.transportation),
+            stringResource(R.string.culture),
+            stringResource(R.string.household),
+            stringResource(R.string.apparel),
+            stringResource(R.string.beauty),
+            stringResource(R.string.health),
+            stringResource(R.string.education),
+            stringResource(R.string.gift),
+            stringResource(R.string.other)
+        )
     }
-    val categorys = listOf("Food", "Social Life", "Self-development", "Transportation", "Culture", "Household")
 
     categoryString = tViewModel.category.observeAsState().value ?: ""
 
-    ModelDialog(text = "Category") {
+    ModelDialog(stringResource(R.string.category)) {
         TextField(
             value = categoryString,
             textStyle = TextStyle(fontSize = 14.sp),
-            onValueChange = { categoryString = it},
+            onValueChange = { categoryString = it },
             enabled = false,
             modifier = Modifier
                 .fillMaxWidth()
@@ -313,7 +348,7 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
                 .clickable { openDialog.value = true },
             colors = TextFieldDefaults.textFieldColors(
                 disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                disabledLabelColor =  MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+                disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
             )
         )
     }
@@ -326,7 +361,7 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
                 openDialog.value = false
             },
             title = {
-                Text(text = "Select account")
+                Text(stringResource(R.string.select_category))
             },
             text = {
                 LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxWidth()) {
@@ -359,7 +394,7 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
                     onClick = {
                         openDialog.value = false
                     }) {
-                    Text("Confirm")
+                    Text(stringResource(R.string.confirm), color = Color.White)
                 }
             }
         )
@@ -370,12 +405,12 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
 fun AmountRow(tViewModel: TransactionViewModel) {
     val amountValue = tViewModel.amount.observeAsState().value
     var amountValueString by remember { mutableStateOf(intToCurrencyString(amountValue)) }
-    val onAmountChange : ((String) -> Unit) = {
+    val onAmountChange: ((String) -> Unit) = {
         amountValueString = getValidatedNumber(it)
         tViewModel.onAmountChange(currencyStringToInt(validateAmount(amountValueString)))
     }
 
-    ModelDialog(text = "Amount") {
+    ModelDialog(stringResource(R.string.amount)) {
         TextField(
             value = amountValueString,
             textStyle = TextStyle(fontSize = 14.sp),
@@ -392,9 +427,9 @@ fun AmountRow(tViewModel: TransactionViewModel) {
 @Composable
 fun DescriptionRow(tViewModel: TransactionViewModel) {
     val descriptionValue by tViewModel.description.observeAsState()
-    val onDescriptionChange : ((String) -> Unit) = { tViewModel.onDescriptionChange(it) }
+    val onDescriptionChange: ((String) -> Unit) = { tViewModel.onDescriptionChange(it) }
 
-    ModelDialog(text = "Note") {
+    ModelDialog(stringResource(R.string.note)) {
         TextField(
             value = descriptionValue.toString(),
             textStyle = TextStyle(fontSize = 14.sp),
@@ -408,9 +443,13 @@ fun DescriptionRow(tViewModel: TransactionViewModel) {
 }
 
 @Composable
-fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: NavController, isUpdate: Boolean) {
+fun InsertTransactionButton(
+    tViewModel: TransactionViewModel,
+    navController: NavController,
+    isUpdate: Boolean
+) {
     val context = LocalContext.current
-    Column() {
+    Column {
         Row(
             Modifier
                 .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -419,9 +458,7 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
             Button(modifier = Modifier.fillMaxWidth(), onClick = {
                 when {
                     areAllRequiredTransactionFieldsFilled(tViewModel) -> {
-                        Log.d("ImagePath", tViewModel.imagePath.value.toString())
-                        Log.d("ImagePath", NavigationItem.Transactions.route)
-                        if(isUpdate) {
+                        if (isUpdate) {
                             tViewModel.updateTransaction()
                         } else {
                             tViewModel.insertTransaction()
@@ -429,31 +466,39 @@ fun InsertTransactionButton(tViewModel: TransactionViewModel, navController: Nav
                         navController.navigate(NavigationItem.Transactions.route)
                     }
                     tViewModel.amount.value == 0 -> {
-                        Toast.makeText(context, "Required fields aren't filled or value can't be 0", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            R.string.required_fields_failed_value,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     else -> {
-                        Toast.makeText(context, "Required fields aren't filled", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.required_fields_failed, Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }) {
-                Text(text = "Save", color = Color.White)
+                Text(stringResource(R.string.save), color = Color.White)
             }
         }
-        if(isUpdate) {
-            Row(Modifier
-                .padding(horizontal = 8.dp, vertical = 4.dp)
-                .fillMaxWidth()
+        if (isUpdate) {
+            Row(
+                Modifier
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .fillMaxWidth()
             )
             {
-                Button(modifier = Modifier.fillMaxWidth(), onClick = {
-                    //AlertDialog opens which contains warning + delete button
-                    tViewModel.deleteTransaction()
-                    navController.navigate(NavigationItem.Transactions.route)
-                }, colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color.Red,
-                    contentColor = Color.White
-                )) {
-                    Text(text = "Delete")
+                Button(
+                    modifier = Modifier.fillMaxWidth(), onClick = {
+                        //AlertDialog opens which contains warning + delete button
+                        tViewModel.deleteTransaction()
+                        navController.navigate(NavigationItem.Transactions.route)
+                    }, colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Red,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(stringResource(R.string.delete))
                 }
             }
         }

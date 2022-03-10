@@ -12,7 +12,6 @@ import androidx.room.PrimaryKey
 data class Transaction(
     @PrimaryKey(autoGenerate = true)
     val transactionId: Long,
-    //-1 for expense, 0 for transaction, +1 for income
     val type: Int,
     val date: String,
     val category:  String,
