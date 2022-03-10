@@ -1,6 +1,5 @@
 package com.example.moneymanager.util
 
-import android.util.Log
 import androidx.compose.ui.graphics.Color
 import com.example.moneymanager.data.model.Account
 import com.example.moneymanager.data.model.Transaction

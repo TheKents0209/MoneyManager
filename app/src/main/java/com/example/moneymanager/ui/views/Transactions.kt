@@ -1,6 +1,5 @@
 package com.example.moneymanager.ui.views
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +12,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,8 +26,8 @@ import com.example.moneymanager.data.repository.AccountRepository
 import com.example.moneymanager.data.repository.TransactionRepository
 import com.example.moneymanager.ui.viewmodel.AccountViewModel
 import com.example.moneymanager.ui.viewmodel.TransactionViewModel
-import com.example.moneymanager.util.formatToDoubleDigits
 import com.example.moneymanager.util.formatStringToDate
+import com.example.moneymanager.util.formatToDoubleDigits
 import com.example.moneymanager.util.intToCurrencyString
 import com.example.moneymanager.util.listDifferentDates
 import java.time.LocalDate
@@ -182,7 +180,7 @@ fun TransactionScreen(navController: NavController) {
                     }
                     Divider(thickness = 1.dp)
                     //List for each transaction that day
-                    Column() {
+                    Column {
                         list.value?.asReversed()?.forEach {
                             if (formatStringToDate(it.date).toString() == dateString) {
                                 Row(modifier = Modifier
