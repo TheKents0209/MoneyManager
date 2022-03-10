@@ -14,6 +14,7 @@ import androidx.compose.material.icons.twotone.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -51,18 +52,20 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
         firstLaunch = prefGet.getBoolean("isFirstLaunch", true)
 
         if (firstLaunch) {
-            val accountViewModel = AccountViewModel(AccountRepository(DB.getInstance(application).AccountDao()))
+            val accountViewModel =
+                AccountViewModel(AccountRepository(DB.getInstance(application).AccountDao()))
 
             //Creating basic accounts so user doesn't need to add them themselves "QOL"
             accountViewModel.insertAccount(Account(0, "Cash", "Cash", 0, true))
             accountViewModel.insertAccount(Account(0, "Bank", "Bank", 0, true))
+            accountViewModel.insertAccount(Account(0, "Savings", "Savings", 0, true))
+            accountViewModel.insertAccount(Account(0, "Investments", "Investments", 0, true))
 
             val prefPut = getSharedPreferences("Preferences", Activity.MODE_PRIVATE)
             val prefEditor = prefPut.edit()
             prefEditor.putBoolean("isFirstLaunch", false)
             prefEditor.apply()
         }
-
 
         setContent {
             //Sets UI Bar as same color as background
@@ -84,7 +87,8 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
-        val currentRouteDestination = navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route
+        val currentRouteDestination =
+            navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry).value?.destination?.route
         val isShaken by sViewModel.isShaken.collectAsState()
         LaunchedEffect(isShaken) {
             if (isShaken && currentRouteDestination != "addTransaction") {
@@ -96,14 +100,30 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
                 if (currentRouteDestination != null) {
                     if (currentRouteDestination == "addTransaction" || currentRouteDestination.startsWith("editTransaction")) {
                         TopAppBar(
-                            title = { Text(text = "Transaction") },
+                            title = { Text(resources.getQuantityString(R.plurals.transaction, 1)) },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     navController.navigateUp()
                                 }) {
                                     Icon(
                                         painterResource(R.drawable.ic_twotone_chevron_left_24),
-                                        contentDescription = "Previous month"
+                                        contentDescription = "Previous screen"
+                                    )
+                                }
+                            },
+                            backgroundColor = MaterialTheme.colors.background
+                        )
+                    }
+                    if (currentRouteDestination == "addAccount") {
+                        TopAppBar(
+                            title = { Text(stringResource(R.string.accounts)) },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    navController.navigateUp()
+                                }) {
+                                    Icon(
+                                        painterResource(R.drawable.ic_twotone_chevron_left_24),
+                                        contentDescription = "Previous screen"
                                     )
                                 }
                             },
@@ -114,13 +134,16 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
             },
             bottomBar = {
                 if (currentRouteDestination != null) {
-                    if (currentRouteDestination != "addTransaction" && !currentRouteDestination.startsWith("editTransaction") && currentRouteDestination != "addAccount") {
+                    if (currentRouteDestination != "addTransaction" &&
+                        !currentRouteDestination.startsWith("editTransaction") &&
+                        currentRouteDestination != "addAccount"
+                    ) {
                         BottomNavigationBar(navController)
                     }
                 }
             },
             floatingActionButton = {
-                if(currentRouteDestination == "transactions" || currentRouteDestination == null) {
+                if (currentRouteDestination == "transactions" || currentRouteDestination == null) {
                     FloatingActionButton(onClick = { navController.navigate("addTransaction") })
                     {
                         Icon(Icons.TwoTone.Add, contentDescription = "Add transaction")
@@ -138,7 +161,6 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
             NavigationItem.Transactions,
             NavigationItem.Stats,
             NavigationItem.Accounts,
-            NavigationItem.Settings
         )
         BottomNavigation(
             backgroundColor = MaterialTheme.colors.background,
@@ -188,13 +210,13 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
             composable(NavigationItem.Accounts.route) {
                 AccountsScreen(navController)
             }
-            composable(NavigationItem.Settings.route) {
-                SettingsScreen()
-            }
             composable("addTransaction") {
                 InsertTransaction(navController)
             }
-            composable("editTransaction/{transactionId}", arguments = listOf(navArgument("transactionId") { type = NavType.LongType })) { backStackEntry ->
+            composable(
+                "editTransaction/{transactionId}",
+                arguments = listOf(navArgument("transactionId") { type = NavType.LongType })
+            ) { backStackEntry ->
                 EditTransaction(backStackEntry.arguments?.getLong("transactionId"), navController)
             }
             composable("addAccount") {

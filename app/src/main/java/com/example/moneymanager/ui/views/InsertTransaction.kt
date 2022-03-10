@@ -13,16 +13,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +44,13 @@ import java.io.FileDescriptor
 //https://github.com/MakeItEasyDev/Jetpack-Compose-Capture-Image-Or-Choose-from-Gallery/blob/main/app/src/main/java/com/jetpack/takecamerapicture/MainActivity.kt
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
-fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewModel, navController: NavController, isUpdate: Boolean) {
+fun InsertTransaction(
+    tViewModel: TransactionViewModel,
+    aViewModel: AccountViewModel,
+    navController: NavController,
+    isUpdate: Boolean
+) {
+    var imgPathViewModel by rememberSaveable { mutableStateOf("") }
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -76,9 +80,8 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                     val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
                     val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
                     result.value = image
-                    //Log.d("StringPathUri cam", uri.toString())
                     parcelFileDescriptor.close()
-                    tViewModel.onImagePathChange(uri.toString())
+                    imgPathViewModel = uri.toString()
                 }
             }
         }
@@ -86,8 +89,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
         if (it && currentPhotoPath != null) {
-            //Log.d("StringPathUri cam", currentPhotoPath!!)
-            tViewModel.onImagePathChange(currentPhotoPath.toString())
+            imgPathViewModel = currentPhotoPath!!
             result.value = BitmapFactory.decodeFile(currentPhotoPath)
         }
     }
@@ -103,14 +105,14 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colors.primary.copy(0.08f))
+                    .background(MaterialTheme.colors.background.copy(0.08f))
             ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Take Photo",
+                        text = stringResource(R.string.take_picture),
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
@@ -136,7 +138,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                                 }
                             }
                             .padding(15.dp),
-                        color = Color.Black,
+                        color = MaterialTheme.colors.onBackground,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -144,10 +146,10 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                         modifier = Modifier
                             .height(0.5.dp)
                             .fillMaxWidth()
-                            .background(Color.LightGray)
+                            .background(MaterialTheme.colors.background)
                     )
                     Text(
-                        text = "Choose from Gallery",
+                        text = stringResource(R.string.choose_gallery),
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
@@ -161,7 +163,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                                 }
                             }
                             .padding(15.dp),
-                        color = Color.Black,
+                        color = MaterialTheme.colors.onBackground,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -169,10 +171,10 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                         modifier = Modifier
                             .height(0.5.dp)
                             .fillMaxWidth()
-                            .background(Color.LightGray)
+                            .background(MaterialTheme.colors.background)
                     )
                     Text(
-                        text = "Cancel",
+                        text = stringResource(R.string.cancel),
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
@@ -181,7 +183,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                                 }
                             }
                             .padding(15.dp),
-                        color = Color.Black,
+                        color = MaterialTheme.colors.onBackground,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -224,6 +226,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                 }
             }
             Column() {
+                tViewModel.onImagePathChange(imgPathViewModel)
                 InsertTransactionButton(tViewModel, navController, isUpdate)
             }
         }
@@ -233,7 +236,12 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun InsertTransaction(navController: NavController) {
-    val tViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
-    val aViewModel = AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
+    val tViewModel = TransactionViewModel(
+        TransactionRepository(
+            DB.getInstance(LocalContext.current).TransactionDao()
+        )
+    )
+    val aViewModel =
+        AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
     InsertTransaction(tViewModel, aViewModel, navController, false)
 }

@@ -8,18 +8,18 @@ import androidx.compose.runtime.Composable
 
 private val DarkColorPalette = darkColors(
     primary = BlueCrayola,
-    primaryVariant = Gold,
+    primaryVariant = Gray,
     secondary = Vermilion,
-    secondaryVariant = Gray,
+    secondaryVariant = Snow,
     background = RichBlack,
     onBackground = Snow,
 )
 
 private val LightColorPalette = lightColors(
     primary = BlueCrayola,
-    primaryVariant = Gold,
+    primaryVariant = Gray,
     secondary = Vermilion,
-    secondaryVariant = Gray,
+    secondaryVariant = RichBlack,
     background = Snow,
     onBackground = RichBlack,
 

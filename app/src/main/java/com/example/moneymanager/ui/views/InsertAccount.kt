@@ -17,9 +17,8 @@ import com.example.moneymanager.ui.viewmodel.TransactionViewModel
 
 @Composable
 fun InsertAccount(navController: NavController) {
-
-    val tViewModel = TransactionViewModel(TransactionRepository(DB.getInstance(LocalContext.current).TransactionDao()))
-    val aViewModel = AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
+    val aViewModel =
+        AccountViewModel(AccountRepository(DB.getInstance(LocalContext.current).AccountDao()))
 
     Column {
         GroupAlertDialog(aViewModel)

@@ -9,6 +9,9 @@ interface AccountDao : GenericDao<Account> {
     @Query("SELECT * FROM accounts")
     fun getAll(): LiveData<List<Account>>
 
+    @Query("SELECT DISTINCT name FROM accounts")
+    fun getAllNames(): LiveData<List<String>>
+
     @Query("SELECT * FROM accounts WHERE accounts.id = :id")
     fun getAccountWithId(id: Long): LiveData<Account>
 

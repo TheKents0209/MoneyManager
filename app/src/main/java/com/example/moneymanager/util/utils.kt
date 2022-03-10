@@ -1,5 +1,6 @@
 package com.example.moneymanager.util
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import com.example.moneymanager.data.model.Account
 import com.example.moneymanager.data.model.Transaction
@@ -12,10 +13,10 @@ import java.util.*
 import kotlin.random.Random
 
 fun formatToDoubleDigits(n: String): String {
-    if (n.toInt() < 10) {
-        return "0${n}"
+    return if (n.toInt() < 10) {
+        "0${n}"
     } else {
-        return n
+        n
     }
 }
 
@@ -34,7 +35,7 @@ fun getValidatedNumber(text: String): String {
     // Start by filtering out unwanted characters like commas and multiple decimals
     val filteredChars = text.filterIndexed { index, c ->
         c in "0123456789" ||                      // Take all digits
-        (c == '.' && text.indexOf('.') == index)  // Take only the first decimal
+                (c == '.' && text.indexOf('.') == index)  // Take only the first decimal
     }
     // Now we need to remove extra digits from the input
     return if (filteredChars.contains('.')) {
@@ -48,18 +49,14 @@ fun getValidatedNumber(text: String): String {
 
 fun intToCurrencyString(input: Int?): String {
     val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault())
-    if(input != null) {
-        if(input.length() >= 2) {
-            val div = input
-            val str = div.toString()
-            val sb = StringBuilder(str)
+    if (input != null) {
+        val str = input.toString()
+        val sb = StringBuilder(str)
+        if (input.length() >= 2) {
             val newVal = sb.insert(str.length - 2, ".").toString()
             return formatter.format(newVal.toDouble())
-        } else if(input.length() == 1) {
-            val div = input
-            val str = div.toString()
-            val sb = StringBuilder(str)
-            val newVal = sb.insert(str.length -1, ".0").toString()
+        } else if (input.length() == 1) {
+            val newVal = sb.insert(str.length - 1, ".0").toString()
             return formatter.format(newVal.toDouble())
         }
     }
@@ -70,7 +67,7 @@ fun currencyStringToInt(input: String?): Int {
     val pattern = Regex("[^0-9]")
     val newVal = input?.replace(pattern, "")
 
-    return if(newVal.isNullOrEmpty()) {
+    return if (newVal.isNullOrEmpty()) {
         0
     } else {
         newVal.toInt()
@@ -78,9 +75,9 @@ fun currencyStringToInt(input: String?): Int {
 }
 
 fun validateAmount(text: String?): String {
-    return if(text != null && text != "" && text != "." && text != ",") {
+    return if (text != null && text != "" && text != "." && text != ",") {
         String.format("%.2f", text.toFloat())
-    }else {
+    } else {
         "0.00"
     }
 }
@@ -93,7 +90,7 @@ fun Int.length() = when (this) {
 fun listDifferentDates(list: List<Transaction>?): List<String> {
     val listOfDates = mutableListOf<String>()
     list?.forEach {
-        if(!listOfDates.contains(formatStringToDate(it.date).toString())) {
+        if (!listOfDates.contains(formatStringToDate(it.date).toString())) {
             listOfDates += formatStringToDate(it.date).toString()
         }
     }
@@ -103,22 +100,22 @@ fun listDifferentDates(list: List<Transaction>?): List<String> {
 fun listDifferentGroups(list: List<Account>?): List<String> {
     val listOfGroups = mutableListOf<String>()
     list?.forEach {
-        if(!listOfGroups.contains(it.group)) {
+        if (!listOfGroups.contains(it.group)) {
             listOfGroups += it.group
         }
     }
     return listOfGroups
 }
 
-fun listDifferentCategorysAndAmounts(list: List<Transaction>?): Map<String, Int> {
+fun listDifferentCategoriesAndAmounts(list: List<Transaction>?): Map<String, Int> {
     val map = mutableMapOf<String, Int>()
 
     list?.forEach {
         if (!map.containsKey(it.category)) {
-            map.put(it.category, it.amount)
+            map[it.category] = it.amount
         } else {
             val currentValue = map.getValue(it.category)
-            map.put(it.category, currentValue + it.amount)
+            map[it.category] = currentValue + it.amount
         }
     }
     //https://www.programiz.com/kotlin-programming/examples/sort-map-values
@@ -136,30 +133,30 @@ fun areAllRequiredAccountFieldsFilled(aViewModel: AccountViewModel): Boolean {
             aViewModel.name.value != ""
 }
 
-fun pickColor(index: Int) : Color {
-    //TODO: Generate color scale that's visibly different enough
+fun pickColor(index: Int): Color {
     val colors = mutableListOf(
         Color(0XFFFF4744),
-        Color(0XFFFF7F44),
+        Color(0XFFFF9044),
         Color(0XFFFFB744),
-        Color(0XFFFFEF44),
-        Color(0XFFD7FF44),
-        Color(0XFF9FFF44),
-        Color(0XFF66FF44),
+        Color(0XFFFFF448),
+        Color(0XFF33ff0b),
+        Color(0XFF00FFFF),
+        Color(0XFF0000FF),
+        Color(0XFF00008b),
+        Color(0XFF800080),
+        Color(0XFFFFC0CB),
+        Color(0XFFFF00FF),
         Color(0XFF44FF92),
         Color(0XFF44FCFF),
         Color(0XFFFF5722),
-        Color(0XFF795548),
-        Color(0XFF9E9E9E),
-        Color(0XFF607D8B)
     )
     //Failsafe if colors list run out
-    if(colors.size >= index) {
+    if (colors.size >= index) {
         return colors[index]
     }
     return Color(
-            Random.nextInt(0, 255),
-            Random.nextInt(0, 255),
-            Random.nextInt(0, 255)
+        Random.nextInt(0, 255),
+        Random.nextInt(0, 255),
+        Random.nextInt(0, 255)
     )
 }

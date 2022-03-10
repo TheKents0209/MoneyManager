@@ -1,6 +1,7 @@
 package com.example.moneymanager.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,7 +11,8 @@ import com.example.moneymanager.data.repository.TransactionRepository
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class TransactionViewModel(private val transactionRepository: TransactionRepository) : AndroidViewModel(Application()) {
+class TransactionViewModel(private val transactionRepository: TransactionRepository) :
+    AndroidViewModel(Application()) {
 
     private val _id = MutableLiveData(0L)
     val id: LiveData<Long> = _id
@@ -72,20 +74,61 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
     val transactions = transactionRepository.getAllTransactions()
 
     fun transactionWithId(id: Long) = transactionRepository.getTransactionWithId(id)
-    fun transactionsByTypeDaily(type: Int, params: String) = transactionRepository.getTransactionsByTypeAndDay(type, params)
+    fun transactionsByTypeDaily(type: Int, params: String) =
+        transactionRepository.getTransactionsByTypeAndDay(type, params)
+
     fun transactionsMonthly(params: String) = transactionRepository.getTransactionsByMonth(params)
-    fun transactionsByTypeMonthly(type: Int, params: String) = transactionRepository.getTransactionByTypeAndMonth(type, params)
-    fun transactionsSumByTypeAndMonth(type: Int, params: String) = transactionRepository.getTransactionsSumByTypeAndMonth(type, params)
-    fun transactionsTotalMonthly(params: String) = transactionRepository.getTransactionsTotalMonth(params)
+    fun transactionsByTypeMonthly(type: Int, params: String) =
+        transactionRepository.getTransactionByTypeAndMonth(type, params)
+
+    fun transactionsSumByTypeAndMonth(type: Int, params: String) =
+        transactionRepository.getTransactionsSumByTypeAndMonth(type, params)
+
+    fun transactionsTotalMonthly(params: String) =
+        transactionRepository.getTransactionsTotalMonth(params)
 
     fun insertTransaction() = viewModelScope.launch {
-        //null checks
-        transactionRepository.insertTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, amount.value!!, description.value!!, imagePath.value!!))
+        transactionRepository.insertTransaction(
+            Transaction(
+                id.value!!,
+                type.value!!,
+                date.value!!,
+                category.value!!,
+                accountId.value!!,
+                amount.value!!,
+                description.value!!,
+                imagePath.value!!
+            )
+        )
     }
+
     fun updateTransaction() = viewModelScope.launch {
-        transactionRepository.updateTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, amount.value!!, description.value!!, imagePath.value!!))
+        transactionRepository.updateTransaction(
+            Transaction(
+                id.value!!,
+                type.value!!,
+                date.value!!,
+                category.value!!,
+                accountId.value!!,
+                amount.value!!,
+                description.value!!,
+                imagePath.value!!
+            )
+        )
     }
+
     fun deleteTransaction() = viewModelScope.launch {
-        transactionRepository.deleteTransaction(Transaction(id.value!!, type.value!!, date.value!!, category.value!!, accountId.value!!, amount.value!!, description.value!!, imagePath.value!!))
+        transactionRepository.deleteTransaction(
+            Transaction(
+                id.value!!,
+                type.value!!,
+                date.value!!,
+                category.value!!,
+                accountId.value!!,
+                amount.value!!,
+                description.value!!,
+                imagePath.value!!
+            )
+        )
     }
 }
