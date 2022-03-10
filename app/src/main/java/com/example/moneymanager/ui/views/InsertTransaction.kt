@@ -103,7 +103,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colors.primary.copy(0.08f))
+                    .background(MaterialTheme.colors.background)
             ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly,
@@ -136,7 +136,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                                 }
                             }
                             .padding(15.dp),
-                        color = Color.Black,
+                        color = MaterialTheme.colors.onBackground,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -144,7 +144,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                         modifier = Modifier
                             .height(0.5.dp)
                             .fillMaxWidth()
-                            .background(Color.LightGray)
+                            .background(MaterialTheme.colors.background)
                     )
                     Text(
                         text = "Choose from Gallery",
@@ -161,7 +161,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                                 }
                             }
                             .padding(15.dp),
-                        color = Color.Black,
+                        color = MaterialTheme.colors.onBackground,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -169,7 +169,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                         modifier = Modifier
                             .height(0.5.dp)
                             .fillMaxWidth()
-                            .background(Color.LightGray)
+                            .background(MaterialTheme.colors.background)
                     )
                     Text(
                         text = "Cancel",
@@ -181,7 +181,7 @@ fun InsertTransaction(tViewModel: TransactionViewModel, aViewModel: AccountViewM
                                 }
                             }
                             .padding(15.dp),
-                        color = Color.Black,
+                        color = MaterialTheme.colors.onBackground,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.SansSerif
                     )

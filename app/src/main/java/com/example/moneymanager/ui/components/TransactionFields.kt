@@ -2,10 +2,13 @@ package com.example.moneymanager.ui.components
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -256,8 +259,8 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
                         Box(
                             modifier = Modifier
                                 .size(128.dp)
-                                .background(Color.Blue)
-                                .border(2.dp, Color.DarkGray)
+                                .background(MaterialTheme.colors.primaryVariant)
+                                .border(2.dp, MaterialTheme.colors.background)
                                 .clickable {
                                     accountString = "${account.name} (${account.group})"
                                     tViewModel.onAccountIdChange(account.id)
@@ -283,11 +286,17 @@ fun AccountAlertDialog(tViewModel: TransactionViewModel, aViewModel: AccountView
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
     val openDialog = remember { mutableStateOf(false) }
     var categoryString by remember { mutableStateOf("") }
     //Categorys are static atm, in the future user can add their own
+    val categories: List<String> = if (tViewModel.type.observeAsState().value == 1) {
+        listOf("Allowance","Salary","Petty cash","Bonus","Other")
+    } else {
+        listOf("Food", "Social Life", "Self-development", "Transportation", "Culture", "Household", "Apparel", "Beauty", "Health", "Education", "Gift","Other")
+    }
     val categorys = listOf("Food", "Social Life", "Self-development", "Transportation", "Culture", "Household")
 
     categoryString = tViewModel.category.observeAsState().value ?: ""
@@ -320,21 +329,27 @@ fun CategoryAlertDialog(tViewModel: TransactionViewModel) {
                 Text(text = "Select account")
             },
             text = {
-                FlowRow(modifier = Modifier.fillMaxWidth()) {
-                    categorys.forEach { category ->
-                        Box(
-                            modifier = Modifier
-                                .size(128.dp)
-                                .background(Color.Blue)
-                                .border(2.dp, Color.DarkGray)
-                                .clickable {
-                                    categoryString = category
-                                    tViewModel.onCategoryChange(categoryString)
-                                    openDialog.value = false
-                                },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(category)
+                LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxWidth()) {
+                    categories.forEach { category ->
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5f)
+                                    .background(MaterialTheme.colors.primaryVariant)
+                                    .border(2.dp, MaterialTheme.colors.background)
+                                    .clickable {
+                                        categoryString = category
+                                        tViewModel.onCategoryChange(categoryString)
+                                        openDialog.value = false
+                                    },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    category,
+                                    modifier = Modifier
+                                        .padding(vertical = 15.dp, horizontal = 5.dp), color = Color.White
+                                )
+                            }
                         }
                     }
                 }

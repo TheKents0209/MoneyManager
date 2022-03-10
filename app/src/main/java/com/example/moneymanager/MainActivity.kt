@@ -188,9 +188,6 @@ class MainActivity : ComponentActivity(), ShakeDetector.Listener {
             composable(NavigationItem.Accounts.route) {
                 AccountsScreen(navController)
             }
-            composable(NavigationItem.Settings.route) {
-                SettingsScreen()
-            }
             composable("addTransaction") {
                 InsertTransaction(navController)
             }
