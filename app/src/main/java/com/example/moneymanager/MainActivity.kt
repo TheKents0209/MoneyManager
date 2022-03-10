@@ -1,11 +1,9 @@
 package com.example.moneymanager
 
-import com.example.moneymanager.ui.views.InsertTransaction
 import android.app.Activity
 import android.content.Context
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.*

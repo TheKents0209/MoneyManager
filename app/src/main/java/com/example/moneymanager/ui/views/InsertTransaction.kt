@@ -192,7 +192,7 @@ fun InsertTransaction(
         },
     ) {
         Column(Modifier.fillMaxSize()) {
-            Column() {
+            Column {
                 TransactionTypeSelector(tViewModel)
                 DateAlertDialog(tViewModel)
                 AccountAlertDialog(tViewModel, aViewModel)
@@ -225,7 +225,7 @@ fun InsertTransaction(
                     }
                 }
             }
-            Column() {
+            Column {
                 tViewModel.onImagePathChange(imgPathViewModel)
                 InsertTransactionButton(tViewModel, navController, isUpdate)
             }

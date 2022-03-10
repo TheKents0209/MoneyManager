@@ -32,12 +32,12 @@ fun PieChart(tViewModel: TransactionViewModel, localDate: LocalDate) {
     val totalAmount =
         tViewModel.transactionsSumByTypeAndMonth(tViewModel.type.observeAsState().value!!, params)
             .observeAsState()
-    val listOfCategorys = listDifferentCategoriesAndAmounts(listOfTransactions.value)
+    val listOfCategories = listDifferentCategoriesAndAmounts(listOfTransactions.value)
 
     val listOfSlices = mutableListOf<PieChartData.Slice>()
     val sliceColors = mutableListOf<Color>()
 
-    listOfCategorys.forEach {
+    listOfCategories.forEach {
         listOfSlices.add(
             PieChartData.Slice(it.value.toFloat(), pickColor(sliceColors.size))
         )
@@ -65,7 +65,7 @@ fun PieChart(tViewModel: TransactionViewModel, localDate: LocalDate) {
         }
         LazyColumn(Modifier.fillMaxSize()) {
             var i = 0
-            listOfCategorys.forEach { (category, amount) ->
+            listOfCategories.forEach { (category, amount) ->
                 item {
                     Row(
                         Modifier
@@ -122,7 +122,7 @@ fun Tabs(tViewModel: TransactionViewModel, localDate: LocalDate) {
         "${stringResource(R.string.income)} ${intToCurrencyString(monthlyIncomes.value)}",
         "${stringResource(R.string.expenses)} ${intToCurrencyString(monthlyExpenses.value)}"
     )
-    Column() {
+    Column {
         TabRow(selectedTabIndex = tabIndex) {
             tabTitles.forEachIndexed { index, title ->
                 Tab(selected = tabIndex == index, modifier =

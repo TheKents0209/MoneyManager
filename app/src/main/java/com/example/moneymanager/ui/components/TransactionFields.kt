@@ -1,6 +1,5 @@
 package com.example.moneymanager.ui.components
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
