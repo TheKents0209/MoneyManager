@@ -67,9 +67,9 @@ fun GroupAlertDialog(aViewModel: AccountViewModel) {
                         item {
                             Box(
                                 modifier = Modifier
-                                    .size(128.dp)
-                                    .background(Color.Blue)
-                                    .border(2.dp, Color.DarkGray)
+                                    .fillMaxWidth(0.5f)
+                                    .background(MaterialTheme.colors.primaryVariant)
+                                    .border(2.dp, MaterialTheme.colors.background)
                                     .clickable {
                                         groupString = group
                                         aViewModel.onGroupChange(groupString)
@@ -77,7 +77,7 @@ fun GroupAlertDialog(aViewModel: AccountViewModel) {
                                     },
                                 contentAlignment = Alignment.Center,
                             ) {
-                                Text(group)
+                                Text(group, modifier = Modifier.padding(vertical = 15.dp, horizontal = 5.dp), color = Color.White)
                             }
                         }
                     }
@@ -88,7 +88,7 @@ fun GroupAlertDialog(aViewModel: AccountViewModel) {
                     onClick = {
                         openDialog.value = false
                     }) {
-                    Text(stringResource(R.string.confirm))
+                    Text(stringResource(R.string.confirm), color = Color.White)
                 }
             }
         )
@@ -156,7 +156,7 @@ fun InsertAccountButton(aViewModel: AccountViewModel, navController: NavControll
                     }
                 }
             }) {
-                Text(stringResource(R.string.save))
+                Text(stringResource(R.string.save), color = Color.White)
             }
         }
     }
